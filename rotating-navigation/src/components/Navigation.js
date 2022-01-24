@@ -4,23 +4,24 @@ import { BsFillPeopleFill } from "react-icons/bs";
 import { FaTimes } from "react-icons/fa";
 import { FaBars } from "react-icons/fa";
 
-function Navigation({showNav, setShowNav}) {
-
-
+function Navigation({ showNav, setShowNav }) {
+  const rotate = {
+    transform: "rotate(-90deg)",
+    transition: "transform 0.4s ease-in",
+  }
   return (
     <>
-      
-        <div className="circle-container">
-          <div className="circle">
-            <button id="close" onClick={() => setShowNav(!showNav)}>
-              <FaTimes />
-            </button>
-            <button id="open" onClick={() => setShowNav(!showNav)}>
-              <FaBars />
-            </button>
-          </div>
+      <div className="circle-container">
+        <div className="circle" style={showNav ? rotate : null}>
+          <button className="close" onClick={() => setShowNav(!showNav)}>
+            <FaTimes />
+          </button>
+          <button className="open" onClick={() => setShowNav(!showNav)}>
+            <FaBars />
+          </button>
         </div>
-      
+      </div>
+
       <nav>
         <ul>
           <li>

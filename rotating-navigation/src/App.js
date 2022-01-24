@@ -7,9 +7,9 @@ function App() {
   const [showNav, setShowNav] = useState(false);
 
   return (
-    <div className="App">
+    <>
+      <Navigation showNav={showNav} setShowNav={setShowNav} />
       <div className={showNav ? "container show-nav" : " container "}>
-        <Navigation showNav={showNav} setShowNav={setShowNav} />
         <div className="content">
           <h1>Amazing Article</h1>
           <span>Florin Pop</span>
@@ -41,7 +41,7 @@ function App() {
           </p>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

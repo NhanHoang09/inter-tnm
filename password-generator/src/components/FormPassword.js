@@ -12,82 +12,118 @@ function FormPassword() {
     numbers: true,
     symbols: true,
   });
+  console.log(passGenerator);
 
-  const setPasswordLength = (e) => {
-    setPassGenerator({ ...passGenerator, length: e.target.value });
+  const handleLengthPass = (e) => {
+    setPassGenerator({
+      ...passGenerator,
+      length: e.target.value,
+    });
   };
 
-  const handleUppercase = () => {
-    setPassGenerator({ ...passGenerator, uppercase: !passGenerator.uppercase });
+  const handleUppercase = (e) => {
+    setPassGenerator({
+      ...passGenerator,
+      uppercase: !passGenerator.uppercase,
+    });
+  };
+  const handleLowercase = (e) => {
+    setPassGenerator({
+      ...passGenerator,
+      lowercase: !passGenerator.lowercase,
+    });
   };
 
-  const handleLowercase = () => {
-    setPassGenerator({ ...passGenerator, lowercase: !passGenerator.lowercase });
+  const handleNumbers = (e) => {
+    setPassGenerator({
+      ...passGenerator,
+      numbers: !passGenerator.numbers,
+    });
   };
 
-  const handleNumbers = () => {
-    setPassGenerator({ ...passGenerator, numbers: !passGenerator.numbers });
+  const handleSymbols = (e) => {
+    setPassGenerator({
+      ...passGenerator,
+      symbols: !passGenerator.symbols,
+    });
   };
 
-  const handleSymbols = () => {
-    setPassGenerator({ ...passGenerator, symbols: !passGenerator.symbols });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setPassGenerator({ ...passGenerator, [name]: value });
   };
 
   const generatePassword = (e) => {
-    let listChars = "";
+    // let listChars = "";
     let seedPassword = "";
 
-    const creatPassword = (listChars) => {
-      for (let i = 0; i < passGenerator.length - 4; i++) {
-        let random = Math.floor(Math.random() * listChars.length);
-        seedPassword += listChars[random];
-      }
-      console.log("create: " + seedPassword);
-      return seedPassword;
-    };
-
     e.preventDefault();
+    if(passGenerator.length < 4) {
+      alert('please enter a number greater than 4');
+    }
+    if(!passGenerator.uppercase && !passGenerator.lowercase && !passGenerator.numbers && !passGenerator.symbols) {
+      alert('please select at least one character type');
+    }
 
     if (passGenerator.uppercase) {
-      const uppercaseChars= "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      const uppercaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
       const random = Math.floor(Math.random() * uppercaseChars.length);
-      listChars += uppercaseChars;
+      // listChars += uppercaseChars;
       seedPassword += uppercaseChars[random];
     }
     if (passGenerator.lowercase) {
-      const lowercaseChars= "abcdefghijklmnopqrstuvwxyz";
+      const lowercaseChars = "abcdefghijklmnopqrstuvwxyz";
       const random = Math.floor(Math.random() * lowercaseChars.length);
-      listChars += lowercaseChars;
+      // listChars += lowercaseChars;
       seedPassword += lowercaseChars[random];
     }
     if (passGenerator.numbers) {
-      const numbersChars= "0123456789";
+      const numbersChars = "0123456789";
       const random = Math.floor(Math.random() * numbersChars.length);
-      listChars += numbersChars;
+      // listChars += numbersChars;
       seedPassword += numbersChars[random];
     }
     if (passGenerator.symbols) {
-      const symbolsChars= "!@#$%^&*()";
+      const symbolsChars = "!@#$%^&*()";
       const random = Math.floor(Math.random() * symbolsChars.length);
-      listChars += symbolsChars;
+      // listChars += symbolsChars;
       seedPassword += symbolsChars[random];
-      console.log("symbols char: "+seedPassword);
-
+      console.log("symbols char: " + seedPassword);
     }
-    console.log("listChars: " + listChars);
 
-    const newPass = creatPassword(listChars)
-      .split("")
-      .sort(function () {
-        return 0.5 - Math.random();
-      })
-      .join("");
+    // const newPass = creatPassword(listChars)
+    //   .split("")
+    //   .sort(function () {
+    //     return 0.5 - Math.random();
+    //   })
+    //   .join("");
 
-    console.log("newPass: " + newPass);
-    console.log('seedPassword: '+seedPassword);
+    // console.log("newPass: " + newPass);
+    // console.log('seedPassword: '+seedPassword);
 
+    const creatPassword = (listChars) => {
 
-    setTextInput(newPass);
+      if (passGenerator.length == 4) {
+        for (let i = 0; i < passGenerator.length; i++) {
+          return listChars;
+        }
+      }
+      if (passGenerator.length > 4) {
+        let newPass = "";
+        for (let i = 0; i < passGenerator.length; i++) {
+
+          let random = Math.floor(Math.random() * listChars.length);
+          newPass += listChars[random];
+        }
+        console.log("newpass"+newPass);
+        return newPass;
+
+      }
+
+      console.log("seedPassword: " + listChars);
+    };
+
+    setTextInput(creatPassword(seedPassword));
   };
 
   const handleClipboard = () => {
@@ -117,7 +153,7 @@ function FormPassword() {
             min="4"
             max="20"
             value={passGenerator.length}
-            onChange={setPasswordLength}
+            onChange={handleLengthPass}
           />
         </div>
         <div className="setting">
@@ -157,7 +193,6 @@ function FormPassword() {
           />
         </div>
       </div>
-
       <button
         className="btn btn-large"
         id="generate"
