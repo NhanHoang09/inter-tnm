@@ -1,36 +1,76 @@
 {
-  "hosting": {
-    "public": ".",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "rewrites": [
-      {
-        "source": "/drawing",
-        "destination": "/drawing-app/build/index.html"
-      },
-      {
-        "source": "/password",
-        "destination": "/password-generator/build/index.html"
-      },
-      {
-        "source": "/rotating",
-        "destination": "/rotating-navigation/build/index.html"
-      },
-      {
-        "source": "/verify",
-        "destination": "/0199-verify-account/build/index.html"
-      },
-      {
-        "source": "/test",
-        "destination": "/build/index.html"
-      },
-      {
-        "source": "/home",
-        "destination": "/index.html"
-      }
-    ]
-  }
+  "hosting": [
+    {
+      "target": "quizapp",
+      "public": "quiz-app/build",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "index.html"
+        }
+      ]
+    },
+    {
+      "target": "intern",
+      "public": "/",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "index.html"
+        }
+      ]
+    },
+    {
+      "target": "drawingapp",
+      "public": "drawing-app/build",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    {
+      "target": "password",
+      "public": "password-generator/build",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    {
+      "target": "rotating",
+      "public": "rotating-navigation/build",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    {
+      "target": "verify",
+      "public": "0199-verify-account/build",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    }
+  ]
 }

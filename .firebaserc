@@ -1,5 +1,32 @@
 {
   "projects": {
     "default": "inter-tnm"
+  },
+  "targets": {
+    "inter-tnm": {
+      "hosting": {
+        "drawingapp": [
+          "drawingapp-inter-tnm"
+        ],
+        "password": [
+          "passwordgenerator-inter-tnm"
+        ],
+        "rotating": [
+          "rotating-inter-tnm"
+        ],
+        "verify": [
+          "verify-inter-tnm"
+        ],
+        "todo": [
+          "todolist-inter-tnm"
+        ],
+        "intern": [
+          "inter-tnm"
+        ],
+        "quizapp": [
+          "quizapp-inter-tnm"
+        ]
+      }
+    }
   }
 }
