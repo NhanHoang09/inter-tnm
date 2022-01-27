@@ -1,6 +1,18 @@
 {
   "hosting": [
     {
+      "target": "pokemonapp",
+      "public": "pokemon/build",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "index.html"
+        }
+      ]
+    },
+    {
       "target": "quizapp",
       "public": "quiz-app/build",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],

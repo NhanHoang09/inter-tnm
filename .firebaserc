@@ -25,6 +25,9 @@
         ],
         "quizapp": [
           "quizapp-inter-tnm"
+        ],
+        "pokemonapp": [
+          "pokemonapp-inter-tnm"
         ]
       }
     }

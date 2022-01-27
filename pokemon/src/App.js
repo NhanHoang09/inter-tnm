@@ -13,9 +13,8 @@ function App() {
       loadingPokemon(response.results);
     }
     fetchData();
-  });
+  },[]);
 
-  //Purpose: This function makes calls to the pokemon API with the url passed in as a parameter
   function pokeAPICall(url) {
     return new Promise((resolve, reject) => {
       fetch(url)
@@ -41,7 +40,6 @@ function App() {
     setPokemon(pokemonData);
   };
 
-  //Displaying the pokemon on the page
   return error ? (
     <div>Error occured</div>
   ) : (
