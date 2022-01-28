@@ -29,49 +29,7 @@ function DragNDrop() {
 
   return (
     <div className="container">
-      <div
-        className="items"
-        onDrop={onDrop}
-        onDragOver={onDragOver}
-        onDragLeave={onDragLeave}
-        onDragEnter={onDragEnter}
-      >
-        <img
-          id="dragImg"
-          alt="drag images"
-          src="https://source.unsplash.com/random/150x150"
-          draggable="true"
-          onDragStart={onDragStart}
-        />
-      </div>
-      <div
-        className="items"
-        onDrop={onDrop}
-        onDragOver={onDragOver}
-        onDragLeave={onDragLeave}
-        onDragEnter={onDragEnter}
-      ></div>
-      <div
-        className="items"
-        onDrop={onDrop}
-        onDragOver={onDragOver}
-        onDragLeave={onDragLeave}
-        onDragEnter={onDragEnter}
-      ></div>
-      <div
-        className="items"
-        onDrop={onDrop}
-        onDragOver={onDragOver}
-        onDragLeave={onDragLeave}
-        onDragEnter={onDragEnter}
-      ></div>
-      <div
-        className="items"
-        onDrop={onDrop}
-        onDragOver={onDragOver}
-        onDragLeave={onDragLeave}
-        onDragEnter={onDragEnter}
-      ></div>
+     
     </div>
   );
 }

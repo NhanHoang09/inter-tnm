@@ -28,6 +28,9 @@
         ],
         "pokemonapp": [
           "pokemonapp-inter-tnm"
+        ],
+        "dragndrop": [
+          "dragndrop-inter-tnm"
         ]
       }
     }
