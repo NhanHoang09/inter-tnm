@@ -78,7 +78,7 @@ export default function Dnd() {
             </div>
           </div>
         ))}
-        <QuestionPoke randomPokemon={randomPokemon} />
+        {/* <QuestionPoke randomPokemon={randomPokemon} /> */}
       </div>
     </>
   );
