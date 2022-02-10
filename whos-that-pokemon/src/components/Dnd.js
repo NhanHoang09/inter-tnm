@@ -41,11 +41,13 @@ export default function Dnd() {
     );
     setPokemon(pokemonData);
     console.log(pokemonData);
+   
   };
   //===============================
   useEffect(() => {
-    setRandomPokemon(pokemon.sort(() => 0.5 - Math.random()).slice(0, 5));
-    console.log(randomPokemon);
+    const randomPK = pokemon.sort(() => 0.5 - Math.random()).slice(0, 5);
+    setRandomPokemon(randomPK);
+    console.log(randomPK);
   }, [pokemon]);
 
   const [dragData, setDragData] = useState({});
