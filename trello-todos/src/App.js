@@ -74,8 +74,9 @@ function App() {
   };
 
   const handleClick = (e) => {
-    console.log(e);
+    console.log(e.target.id);
     setShowModal(true);
+
   };
 
   const handleClose = () => setShowModal(false);
