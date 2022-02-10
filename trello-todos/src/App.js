@@ -2,10 +2,13 @@ import Board from "react-trello";
 import axios from "axios";
 import "./App.css";
 import { useEffect, useState } from "react";
+import FormModal from "./components/FormModal";
 
 function App() {
   const [tasks, setTasks] = useState([]);
   const [users, setUsers] = useState([]);
+
+  const [showModal, setShowModal] = useState(false);
 
   const fetchDataTodos = () => {
     axios
@@ -38,47 +41,62 @@ function App() {
         id: "todos",
         title: "todos",
         style: { width: 380 },
-        cards: tasks.filter((task) => task.completed === true).map((item) => ({
-          id: item.id,
-          title: item.title,
-          completed: item.completed,
-        })),
+        cards: tasks
+          .filter((task) => task.completed === true)
+          .map((item) => ({
+            id: item.id,
+            title: item.title,
+            completed: item.completed,
+          })),
       },
       {
         id: "completed",
         title: "completed",
         style: { width: 380 },
-        cards: tasks.filter((task) => task.completed === false).map((item) => ({
-          id: item.id,
-          title: item.title,
-          completed: item.completed,
-        })),
+        cards: tasks
+          .filter((task) => task.completed === false)
+          .map((item) => ({
+            id: item.id,
+            title: item.title,
+            completed: item.completed,
+          })),
       },
     ],
   };
 
+  const [edit, setEdit] = useState({
+    id: null,
+    value: "",
+  });
+
+  const EditData = async (id,data) => {
+    await axios.put(`https://jsonplaceholder.typicode.com/todos/${id}`, data);
+  };
+
+  const handleClick = (e) => {
+    console.log(e);
+    setShowModal(true);
+  };
+
+  const handleClose = () => setShowModal(false);
+
+  const handleSubmit = (data) => {
+    EditData(edit.id, data);
+    handleClose();
+  };
+
+
   return (
     <div className="App">
-      {/* <div>
-        {tasks
-          .filter((task) => task.completed === true)
-          .map((task) => (
-            <div>{task.title}</div>
-          ))}
-      </div>
-      <div>
-        {tasks
-          .filter((task) => task.completed === false)
-          .map((task) => (
-            <div>{task.title}</div>
-          ))}
-      </div>
-      <div>
-        {users.map((user) => (
-          <div>{user.name}</div>
-        ))}
-      </div> */}
-      <Board data={data} draggable />
+      <Board data={data} draggable onCardClick={handleClick} />
+      <FormModal
+        users={users}
+        handleClose={handleClose}
+        showModal={showModal}
+        EditData={EditData}
+        handleSubmit={handleSubmit}
+        data={data}
+      />
     </div>
   );
 }

@@ -41,7 +41,6 @@ export default function Dnd() {
     );
     setPokemon(pokemonData);
     console.log(pokemonData);
-   
   };
   //===============================
   useEffect(() => {
@@ -80,7 +79,7 @@ export default function Dnd() {
             </div>
           </div>
         ))}
-        {/* <QuestionPoke randomPokemon={randomPokemon} /> */}
+        {randomPokemon?.length && <QuestionPoke randomPokemon={randomPokemon}  /> }
       </div>
     </>
   );

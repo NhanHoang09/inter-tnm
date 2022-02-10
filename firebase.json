@@ -1,6 +1,18 @@
 {
   "hosting": [
     {
+      "target": "trellotodolist",
+      "public": "trello-todos/build",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "index.html"
+        }
+      ]
+    },
+    {
       "target": "dragndrop",
       "public": "dragndrop/build",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
