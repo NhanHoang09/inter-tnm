@@ -3,13 +3,41 @@ import axios from "axios";
 import "./App.css";
 import { useEffect, useState } from "react";
 import FormModal from "./components/FormModal";
+import { Button } from "react-bootstrap";
+
+const BACKGROUND_IMAGE_STORAGE_KEY = "BACKGROUND_IMAGE";
 
 function App() {
   const [tasks, setTasks] = useState([]);
   const [users, setUsers] = useState([]);
   const [edit, setEdit] = useState({});
   const [showModal, setShowModal] = useState(false);
-  // const [completed, setCompleted] = useState(false);
+  const [backgroundImage, setBackgroundImage] = useState("");
+  const [bg, setBg] = useState(
+    "https://i.natgeofe.com/k/a2a738a9-e019-4911-98e6-17f31c45ac88/milky-way-2_2x1.jpg"
+  );
+
+  const initialBg = [
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/24701-nature-natural-beauty.jpg/1280px-24701-nature-natural-beauty.jpg",
+    "https://cdn.britannica.com/29/148329-050-269A9EFE/night-sky-Milky-Way-Galaxy.jpg",
+    "https://img.etimg.com/photo/msid-68721421,quality-100/nature.jpg",
+  ];
+
+  useEffect(() => {
+    const storagedBackgroundImage = localStorage.getItem(
+      BACKGROUND_IMAGE_STORAGE_KEY
+    );
+    if (storagedBackgroundImage) {
+      setBackgroundImage(JSON.parse(storagedBackgroundImage));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(
+      BACKGROUND_IMAGE_STORAGE_KEY,
+      JSON.stringify(backgroundImage)
+    );
+  }, [backgroundImage]);
 
   const fetchDataTodos = () => {
     axios
@@ -42,8 +70,14 @@ function App() {
       {
         id: "todos",
         title: "Todos",
-        style: { width: 380 },
-        cardStyle: { height:100},
+        style: { width: 380, textAlign: "center", marginLeft: "75%" },
+        cardStyle: {
+          height: 100,
+          width: 300,
+          borderRadius: 10,
+          margin: "5px 18px",
+          boxShadow: "3px 3px 5px #000",
+        },
         cards: tasks
           .filter((task) => task.completed === false)
           .map((item) => ({
@@ -55,8 +89,14 @@ function App() {
       {
         id: "completed",
         title: "Completed",
-        style: { width: 380 },
-        cardStyle: { height:100},
+        style: { width: 380, marginLeft: "75%" },
+        cardStyle: {
+          height: 100,
+          width: 300,
+          borderRadius: 10,
+          margin: "5px 18px",
+          boxShadow: "3px 3px 5px #000",
+        },
 
         cards: tasks
           .filter((task) => task.completed === true)
@@ -82,9 +122,25 @@ function App() {
 
   const handleClose = () => setShowModal(false);
 
-  const handleDragEnd = (id) => {
-    console.log("DragEnd");
+  const handleChangeBackgroundImage = (e) => {
+    console.log("bg change");
+    const randomImage = Math.floor(Math.random() * initialBg.length);
+    setBg(initialBg[randomImage]);
   };
+
+  const handleImageChange = (e) => {
+    let img = e.target.files[0];
+    console.log("🚀 ~ file: App.js ~ line 133 ~ handleImageChange ~ img", img)
+    setBg(img);
+    
+  };
+
+  const handleUploadImage = (e) => {
+    e.preventDefault();
+    setBackgroundImage(bg.name);
+    console.log("handelUpload", bg);
+  }
+
 
   return (
     <div className="App">
@@ -92,9 +148,22 @@ function App() {
         data={data}
         draggable
         onCardClick={handleCardClick}
-        handleDragEnd={handleDragEnd}
-        className="board"
+        style={{
+          backgroundImage: "url(" + bg + ")",
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+        }}
       />
+      <Button
+        className="changeBg"
+        variant="outline-primary"
+        onClick={handleChangeBackgroundImage}
+      >
+        Change Background
+      </Button>
+      <input type="file" placeholder="choice file" onChange={handleImageChange}/>
+      <button onClick={handleUploadImage}>Upload</button>
 
       <FormModal
         users={users}
@@ -104,7 +173,6 @@ function App() {
         setEdit={setEdit}
         setTasks={setTasks}
         tasks={tasks}
-        fetchDataTodos={fetchDataTodos}
       />
     </div>
   );

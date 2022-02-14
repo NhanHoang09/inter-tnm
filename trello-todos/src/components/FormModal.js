@@ -9,7 +9,6 @@ function FormModal({
   edit,
   setEdit,
   setTasks,
-  fetchDataTodos,
   tasks,
 }) {
   console.log("🚀 ~ file: FormModal.js ~ line 6 ~ FormModal ~ edit", edit);

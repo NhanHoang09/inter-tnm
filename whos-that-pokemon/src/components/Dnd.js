@@ -42,7 +42,7 @@ export default function Dnd() {
     setPokemon(pokemonData);
     console.log(pokemonData);
   };
-  //===============================
+  
   useEffect(() => {
     const randomPK = pokemon.sort(() => 0.5 - Math.random()).slice(0, 5);
     setRandomPokemon(randomPK);
