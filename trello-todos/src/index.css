@@ -71,3 +71,9 @@ code {
 .assignee label{
   margin-right: 0.5em;
 }
+
+header{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

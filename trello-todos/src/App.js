@@ -3,41 +3,56 @@ import axios from "axios";
 import "./App.css";
 import { useEffect, useState } from "react";
 import FormModal from "./components/FormModal";
-import { Button } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 
-const BACKGROUND_IMAGE_STORAGE_KEY = "BACKGROUND_IMAGE";
+// const BACKGROUND_IMAGE_STORAGE_KEY = "BACKGROUND_IMAGE";
 
 function App() {
   const [tasks, setTasks] = useState([]);
   const [users, setUsers] = useState([]);
   const [edit, setEdit] = useState({});
   const [showModal, setShowModal] = useState(false);
-  const [backgroundImage, setBackgroundImage] = useState("");
-  const [bg, setBg] = useState(
-    "https://i.natgeofe.com/k/a2a738a9-e019-4911-98e6-17f31c45ac88/milky-way-2_2x1.jpg"
-  );
+
+  const [bg, setBg] = useState('');
 
   const initialBg = [
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/24701-nature-natural-beauty.jpg/1280px-24701-nature-natural-beauty.jpg",
-    "https://cdn.britannica.com/29/148329-050-269A9EFE/night-sky-Milky-Way-Galaxy.jpg",
-    "https://img.etimg.com/photo/msid-68721421,quality-100/nature.jpg",
+    {
+      id: 1,
+      label: "Valentine",
+      url: "https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F23%2F2022%2F01%2F05%2Fhistory-for-valentines-day-2000.jpg&q=60",
+    },
+    {
+      id: 2,
+      label: "Christmas",
+      url: "https://i.natgeofe.com/k/dfc7bec2-0657-4887-81a7-6d024a8c3f70/WH-XmasTree.jpg",
+    },
+    {
+      id: 3,
+      label: "Nature",
+      url: "https://www.greenqueen.com.hk/wp-content/uploads/2021/06/WEF-Investments-In-Nature-Based-Solutions-Have-To-Triple-By-2030-To-Address-Climate-Change-Biodiversity-Loss.jpg",
+    },
+    {
+      id: 4,
+      label: "Galaxy",
+      url: "https://i.natgeofe.com/k/a2a738a9-e019-4911-98e6-17f31c45ac88/milky-way-2_2x1.jpg",
+    },
   ];
 
-  useEffect(() => {
-    const storagedBackgroundImage = localStorage.getItem(
-      BACKGROUND_IMAGE_STORAGE_KEY
-    );
-    if (storagedBackgroundImage) {
-      setBackgroundImage(JSON.parse(storagedBackgroundImage));
-    }
-  }, []);
+  // useEffect(() => {
+  //   const storagedBackgroundImage = localStorage.getItem(
+  //     BACKGROUND_IMAGE_STORAGE_KEY
+  //   );
+  //   if (storagedBackgroundImage) {
+  //     setBackgroundImage(JSON.parse(storagedBackgroundImage));
+  //   }
+  // }, []);
 
-  useEffect(() => {
-    localStorage.setItem(
-      BACKGROUND_IMAGE_STORAGE_KEY,
-      JSON.stringify(backgroundImage)
-    );
-  }, [backgroundImage]);
+  // useEffect(() => {
+  //   localStorage.setItem(
+  //     BACKGROUND_IMAGE_STORAGE_KEY,
+  //     JSON.stringify(backgroundImage)
+  //   );
+  // }, [backgroundImage]);
 
   const fetchDataTodos = () => {
     axios
@@ -69,8 +84,8 @@ function App() {
     lanes: [
       {
         id: "todos",
-        title: "Todos",
-        style: { width: 380, textAlign: "center", marginLeft: "75%" },
+        title: "TODOS",
+        style: { width: 380 },
         cardStyle: {
           height: 100,
           width: 300,
@@ -88,8 +103,8 @@ function App() {
       },
       {
         id: "completed",
-        title: "Completed",
-        style: { width: 380, marginLeft: "75%" },
+        title: "COMPLETED",
+        style: { width: 380 },
         cardStyle: {
           height: 100,
           width: 300,
@@ -122,25 +137,12 @@ function App() {
 
   const handleClose = () => setShowModal(false);
 
-  const handleChangeBackgroundImage = (e) => {
-    console.log("bg change");
-    const randomImage = Math.floor(Math.random() * initialBg.length);
-    setBg(initialBg[randomImage]);
-  };
 
-  const handleImageChange = (e) => {
-    let img = e.target.files[0];
-    console.log("🚀 ~ file: App.js ~ line 133 ~ handleImageChange ~ img", img)
-    setBg(img);
-    
-  };
-
-  const handleUploadImage = (e) => {
-    e.preventDefault();
-    setBackgroundImage(bg.name);
-    console.log("handelUpload", bg);
+  const handleChangeBackground = (e) => {
+    const event = e.target.value;
+    console.log("🚀 ~ file: App.js ~ line 150 ~ handleChangeBackground ~ event", event)
+    setBg(event);
   }
-
 
   return (
     <div className="App">
@@ -155,15 +157,18 @@ function App() {
           backgroundRepeat: "no-repeat",
         }}
       />
-      <Button
-        className="changeBg"
-        variant="outline-primary"
-        onClick={handleChangeBackgroundImage}
-      >
-        Change Background
-      </Button>
-      <input type="file" placeholder="choice file" onChange={handleImageChange}/>
-      <button onClick={handleUploadImage}>Upload</button>
+
+      <div className="changeBg">
+        <Form.Select aria-label="Default select example" onChange={handleChangeBackground}>
+          <option >Select background</option>
+          {initialBg.map((bg) => (
+            <option key={bg.id} value={bg.url} >
+              {bg.label}
+            </option>
+          ))}
+    
+        </Form.Select>
+      </div>
 
       <FormModal
         users={users}
