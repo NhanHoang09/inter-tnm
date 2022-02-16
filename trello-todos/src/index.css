@@ -1,16 +1,28 @@
-
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+/* span {
+  width: 100% !important;
+  font-weight: normal !important;
+} */
+
+.kebfuV {
+  display: none;
+}
+
+.bfQVbl {
+  margin-bottom: 0 !important;
 }
 
 .container {
@@ -24,7 +36,7 @@ code {
   width: 200px;
   margin: 20px;
   border-radius: 10px;
-  box-shadow: 1px 1px 6px rgba(0,0,0,0.5);
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
@@ -47,7 +59,7 @@ code {
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0px 0px 3px rgba(0,0,0,0.5);
+  box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.5);
 }
 
 .title label {
@@ -63,17 +75,21 @@ code {
   margin-right: 0.5em;
 }
 
-.assignee{
+.assignee {
   font-size: 1.2em;
   margin-top: 0.8em;
 }
 
-.assignee label{
+.assignee label {
   margin-right: 0.5em;
 }
 
-header{
-  display: flex;
-  justify-content: center;
-  align-items: center;
+section > header > span {
+  width: 100% !important;
+  text-align: center;
+}
+
+article > header > span {
+  width: 100% !important;
+  font-weight: normal !important;
 }

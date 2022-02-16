@@ -3,9 +3,8 @@ import axios from "axios";
 import "./App.css";
 import { useEffect, useState } from "react";
 import FormModal from "./components/FormModal";
-import { Button, Form } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 
-// const BACKGROUND_IMAGE_STORAGE_KEY = "BACKGROUND_IMAGE";
 
 function App() {
   const [tasks, setTasks] = useState([]);
@@ -13,7 +12,7 @@ function App() {
   const [edit, setEdit] = useState({});
   const [showModal, setShowModal] = useState(false);
 
-  const [bg, setBg] = useState('');
+  const [bg, setBg] = useState("");
 
   const initialBg = [
     {
@@ -37,22 +36,6 @@ function App() {
       url: "https://i.natgeofe.com/k/a2a738a9-e019-4911-98e6-17f31c45ac88/milky-way-2_2x1.jpg",
     },
   ];
-
-  // useEffect(() => {
-  //   const storagedBackgroundImage = localStorage.getItem(
-  //     BACKGROUND_IMAGE_STORAGE_KEY
-  //   );
-  //   if (storagedBackgroundImage) {
-  //     setBackgroundImage(JSON.parse(storagedBackgroundImage));
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   localStorage.setItem(
-  //     BACKGROUND_IMAGE_STORAGE_KEY,
-  //     JSON.stringify(backgroundImage)
-  //   );
-  // }, [backgroundImage]);
 
   const fetchDataTodos = () => {
     axios
@@ -87,11 +70,13 @@ function App() {
         title: "TODOS",
         style: { width: 380 },
         cardStyle: {
-          height: 100,
-          width: 300,
+          height: "100%",
+          width: "100%",
           borderRadius: 10,
           margin: "5px 18px",
-          boxShadow: "3px 3px 5px #000",
+          boxShadow: "rgb(0 0 0 / 10%) 0px 0px 5px",
+          backgroundColor: "#ebecf0",
+          textColor: "#172b4d",
         },
         cards: tasks
           .filter((task) => task.completed === false)
@@ -106,11 +91,13 @@ function App() {
         title: "COMPLETED",
         style: { width: 380 },
         cardStyle: {
-          height: 100,
-          width: 300,
+          height: "100%",
+          width: "100%",
           borderRadius: 10,
           margin: "5px 18px",
-          boxShadow: "3px 3px 5px #000",
+          boxShadow: "rgb(0 0 0 / 10%) 0px 0px 5px",
+          backgroundColor: "#ebecf0",
+          textColor: "#172b4d",
         },
 
         cards: tasks
@@ -137,12 +124,23 @@ function App() {
 
   const handleClose = () => setShowModal(false);
 
-
   const handleChangeBackground = (e) => {
     const event = e.target.value;
-    console.log("🚀 ~ file: App.js ~ line 150 ~ handleChangeBackground ~ event", event)
+    console.log(
+      "🚀 ~ file: App.js ~ line 150 ~ handleChangeBackground ~ event",
+      event
+    );
     setBg(event);
-  }
+  };
+
+  const handleSetDefaultBackground = () => {
+    setBg("");
+  };
+
+  const handleMouseMove = (e) => {
+    console.log("🚀 ~ file: App.js ~ line 143 ~ handleMouseMove ~ e", e.nativeEvent.offsetX);
+    e.target.style.backgroundPosition = `calc(50% + ${e.nativeEvent.offsetX /200}px) calc(50% + ${e.nativeEvent.offsetY /200}px)`;
+  };
 
   return (
     <div className="App">
@@ -156,17 +154,22 @@ function App() {
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
         }}
+        onMouseMove={handleMouseMove}
       />
 
       <div className="changeBg">
-        <Form.Select aria-label="Default select example" onChange={handleChangeBackground}>
-          <option >Select background</option>
+        <Form.Select
+          aria-label="Default select example"
+          onChange={handleChangeBackground}
+        >
+          <option onClick={handleSetDefaultBackground}>
+            Select background
+          </option>
           {initialBg.map((bg) => (
-            <option key={bg.id} value={bg.url} >
+            <option key={bg.id} value={bg.url}>
               {bg.label}
             </option>
           ))}
-    
         </Form.Select>
       </div>
 
