@@ -13,7 +13,7 @@ function FormModal({
 }) {
   console.log("🚀 ~ file: FormModal.js ~ line 6 ~ FormModal ~ edit", edit);
 
-  const inputTitle = edit?.data?.title;
+  const inputTitle = edit?.title;
   console.log(
     "🚀 ~ file: FormModal.js ~ line 8 ~ FormModal ~ inputTitle",
     inputTitle
@@ -41,25 +41,23 @@ function FormModal({
   };
 
   const handleSubmitForm = (data) => {
-    EditData(edit.id, edit.data);
+    EditData(edit.id, edit);
     console.log(
       "🚀 ~ file: FormModal.js ~ line 27 ~ handleSubmitForm ~ edit.data",
-      edit.data
+      edit
     );
     handleClose();
   };
 
   const handleChangeInput = (e) => {
     setTitle(e.target.value);
-    setEdit({ ...edit, data: { ...edit.data, title: e.target.value } });
+    setEdit({...edit, title: e.target.value});
   };
 
   const handleChangeStatus = (e) => {
     console.log(e.target.value);
-    setEdit({
-      ...edit,
-      data: { ...edit.data, completed: Boolean(e.target.value) },
-    });
+    const convertCompleted = Boolean(e.target.value);
+    setEdit({...edit, completed: convertCompleted});
   };
 
   return (
@@ -71,7 +69,7 @@ function FormModal({
 
         <Modal.Body>
           <div className="title">
-            <label>Title:</label>
+            <label className="label">Title:</label>
             <input
               type="text"
               className="form-control"
@@ -80,14 +78,14 @@ function FormModal({
             />
           </div>
           <div className="status">
-            <label>Status:</label>
-            <select onChange={handleChangeStatus}>
-              {edit?.data?.completed ? (
+            <label className="label">Status:</label>
+            <select className="form-select" onChange={handleChangeStatus}>
+              {edit?.completed ? (
                 <option value={true}>Completed</option>
               ) : (
                 <option value={false}>Incomplete</option>
               )}
-              {edit?.data?.completed ? (
+              {edit?.completed ? (
                 <option value={false}>Incomplete</option>
               ) : (
                 <option value={true}>Completed</option>
@@ -95,8 +93,8 @@ function FormModal({
             </select>
           </div>
           <div className="assignee">
-            <label>Assignee:</label>
-            <select>
+            <label className="label">Assignee:</label>
+            <select className="form-select">
               {users?.map((user) => (
                 <option key={user.id} value={user.name}>
                   {user.name}

@@ -1,48 +1,24 @@
+import React, { useEffect, useState } from "react";
 import Board from "react-trello";
 import axios from "axios";
-import "./App.css";
-import { useEffect, useState } from "react";
 import FormModal from "./components/FormModal";
-import { Form } from "react-bootstrap";
-
+import LazyLoad from "react-lazyload";
+import { Button } from "react-bootstrap";
+import FormSelect from "./components/FormSelect";
 
 function App() {
   const [tasks, setTasks] = useState([]);
   const [users, setUsers] = useState([]);
-  const [edit, setEdit] = useState({});
+  const [edit, setEdit] = useState([]);
   const [showModal, setShowModal] = useState(false);
-
   const [bg, setBg] = useState("");
-
-  const initialBg = [
-    {
-      id: 1,
-      label: "Valentine",
-      url: "https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F23%2F2022%2F01%2F05%2Fhistory-for-valentines-day-2000.jpg&q=60",
-    },
-    {
-      id: 2,
-      label: "Christmas",
-      url: "https://i.natgeofe.com/k/dfc7bec2-0657-4887-81a7-6d024a8c3f70/WH-XmasTree.jpg",
-    },
-    {
-      id: 3,
-      label: "Nature",
-      url: "https://www.greenqueen.com.hk/wp-content/uploads/2021/06/WEF-Investments-In-Nature-Based-Solutions-Have-To-Triple-By-2030-To-Address-Climate-Change-Biodiversity-Loss.jpg",
-    },
-    {
-      id: 4,
-      label: "Galaxy",
-      url: "https://i.natgeofe.com/k/a2a738a9-e019-4911-98e6-17f31c45ac88/milky-way-2_2x1.jpg",
-    },
-  ];
+  const [noOfElements, setNoOfElements] = useState(15);
 
   const fetchDataTodos = () => {
     axios
       .get("https://jsonplaceholder.typicode.com/todos")
       .then((res) => {
         setTasks(res.data);
-        console.log("Tasks", tasks[3]?.title);
       })
       .catch((err) => {
         console.log(err);
@@ -68,18 +44,26 @@ function App() {
       {
         id: "todos",
         title: "TODOS",
-        style: { width: 380 },
+        currentPage: 1,
+        style: {
+          width: 310,
+          height: "calc(100vh - 75px)",
+          backgroundColor: "#ebecf0",
+          textColor: "#172b4d",
+          boxShadow: "rgb(0 0 0 / 10%) 0px 0px 5px",
+        },
         cardStyle: {
           height: "100%",
           width: "100%",
           borderRadius: 10,
-          margin: "5px 18px",
+          margin: "3px 18px",
           boxShadow: "rgb(0 0 0 / 10%) 0px 0px 5px",
-          backgroundColor: "#ebecf0",
+          backgroundColor: "White",
           textColor: "#172b4d",
         },
         cards: tasks
           .filter((task) => task.completed === false)
+          .slice(0, noOfElements)
           .map((item) => ({
             id: item.id,
             title: item.title,
@@ -89,19 +73,29 @@ function App() {
       {
         id: "completed",
         title: "COMPLETED",
-        style: { width: 380 },
+        currentPage: 1,
+        style: {
+          width: 310,
+          height: "calc(100vh - 75px)",
+
+          backgroundColor: "#ebecf0",
+          textColor: "#172b4d",
+          boxShadow: "rgb(0 0 0 / 10%) 0px 0px 5px",
+
+        },
         cardStyle: {
           height: "100%",
           width: "100%",
           borderRadius: 10,
-          margin: "5px 18px",
+          margin: "3px 18px",
           boxShadow: "rgb(0 0 0 / 10%) 0px 0px 5px",
-          backgroundColor: "#ebecf0",
+          backgroundColor: "White",
           textColor: "#172b4d",
         },
 
         cards: tasks
           .filter((task) => task.completed === true)
+          .slice(0, noOfElements)
           .map((item) => ({
             id: item.id,
             title: item.title,
@@ -119,7 +113,7 @@ function App() {
       "🚀 ~ file: App.js ~ line 77 ~ handleCardClick ~ metaData",
       metaData
     );
-    setEdit({ id, data: metaData });
+    setEdit(metaData);
   };
 
   const handleClose = () => setShowModal(false);
@@ -138,40 +132,50 @@ function App() {
   };
 
   const handleMouseMove = (e) => {
-    console.log("🚀 ~ file: App.js ~ line 143 ~ handleMouseMove ~ e", e.nativeEvent.offsetX);
-    e.target.style.backgroundPosition = `calc(50% + ${e.nativeEvent.offsetX /200}px) calc(50% + ${e.nativeEvent.offsetY /200}px)`;
+    e.target.style.backgroundPosition = `calc(50% + ${
+      e.nativeEvent.offsetX / 200
+    }px) calc(50% + ${e.nativeEvent.offsetY / 200}px)`;
+  };
+
+  const loadMore = () => {
+    setNoOfElements((prev) => prev + 10);
+    console.log(
+      "🚀 ~ file: App.js ~ line 181 ~ loadMore ~ noOfElements",
+      noOfElements
+    );
   };
 
   return (
     <div className="App">
-      <Board
-        data={data}
-        draggable
-        onCardClick={handleCardClick}
-        style={{
-          backgroundImage: "url(" + bg + ")",
-          backgroundPosition: "center",
-          backgroundSize: "cover",
-          backgroundRepeat: "no-repeat",
-        }}
-        onMouseMove={handleMouseMove}
-      />
+      {tasks.length > 0 ? (
+        <LazyLoad>
+          <Board
+            data={data}
+            draggable
+            onCardClick={handleCardClick}
+            style={{
+              backgroundImage: "url(" + bg + ")",
+              backgroundPosition: "center",
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+            }}
+            onMouseMove={handleMouseMove}
+          />
+        </LazyLoad>
+      ) : (
+        <div className="loaderContainer">
+          <div className="loader"></div>
+        </div>
+      )}
 
-      <div className="changeBg">
-        <Form.Select
-          aria-label="Default select example"
-          onChange={handleChangeBackground}
-        >
-          <option onClick={handleSetDefaultBackground}>
-            Select background
-          </option>
-          {initialBg.map((bg) => (
-            <option key={bg.id} value={bg.url}>
-              {bg.label}
-            </option>
-          ))}
-        </Form.Select>
-      </div>
+      <Button variant="secondary" className="loadmore" onClick={loadMore}>
+        Load More
+      </Button>
+
+      <FormSelect
+        handleChangeBackground={handleChangeBackground}
+        handleSetDefaultBackground={handleSetDefaultBackground}
+      />
 
       <FormModal
         users={users}
