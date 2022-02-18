@@ -11,7 +11,6 @@ function FormModal({
   setTasks,
   tasks,
 }) {
-  console.log("🚀 ~ file: FormModal.js ~ line 6 ~ FormModal ~ edit", edit);
 
   const inputTitle = edit?.title;
   console.log(

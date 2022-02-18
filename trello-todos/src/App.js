@@ -3,7 +3,6 @@ import Board from "react-trello";
 import axios from "axios";
 import FormModal from "./components/FormModal";
 import LazyLoad from "react-lazyload";
-import { Button } from "react-bootstrap";
 import FormSelect from "./components/FormSelect";
 
 function App() {
@@ -12,27 +11,20 @@ function App() {
   const [edit, setEdit] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [bg, setBg] = useState("");
-  const [noOfElements, setNoOfElements] = useState(15);
+  const [scrollTodos, setScrollTodos] = useState(10);
+  const [scrollCompleted, setScrollCompleted] = useState(10);
 
-  const fetchDataTodos = () => {
-    axios
-      .get("https://jsonplaceholder.typicode.com/todos")
-      .then((res) => {
-        setTasks(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  const fetchDataTodos = async () => {
+    const response = await axios.get(
+      "https://jsonplaceholder.typicode.com/todos"
+    );
+    setTasks(response.data.slice(0, 20));
   };
-  const fetchDataUsers = () => {
-    axios
-      .get("https://jsonplaceholder.typicode.com/users")
-      .then((res) => {
-        setUsers(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  const fetchDataUsers = async () => {
+    const response = await axios.get(
+      "https://jsonplaceholder.typicode.com/users"
+    );
+    setUsers(response.data);
   };
   useEffect(() => {
     fetchDataTodos();
@@ -47,7 +39,7 @@ function App() {
         currentPage: 1,
         style: {
           width: 310,
-          height: "calc(100vh - 75px)",
+          height: "calc(100vh - 25px)",
           backgroundColor: "#ebecf0",
           textColor: "#172b4d",
           boxShadow: "rgb(0 0 0 / 10%) 0px 0px 5px",
@@ -63,7 +55,7 @@ function App() {
         },
         cards: tasks
           .filter((task) => task.completed === false)
-          .slice(0, noOfElements)
+          .slice(0, scrollTodos)
           .map((item) => ({
             id: item.id,
             title: item.title,
@@ -76,12 +68,10 @@ function App() {
         currentPage: 1,
         style: {
           width: 310,
-          height: "calc(100vh - 75px)",
-
+          height: "calc(100vh - 25px)",
           backgroundColor: "#ebecf0",
           textColor: "#172b4d",
           boxShadow: "rgb(0 0 0 / 10%) 0px 0px 5px",
-
         },
         cardStyle: {
           height: "100%",
@@ -92,10 +82,9 @@ function App() {
           backgroundColor: "White",
           textColor: "#172b4d",
         },
-
         cards: tasks
           .filter((task) => task.completed === true)
-          .slice(0, noOfElements)
+          .slice(0, scrollCompleted)
           .map((item) => ({
             id: item.id,
             title: item.title,
@@ -137,13 +126,23 @@ function App() {
     }px) calc(50% + ${e.nativeEvent.offsetY / 200}px)`;
   };
 
-  const loadMore = () => {
-    setNoOfElements((prev) => prev + 10);
-    console.log(
-      "🚀 ~ file: App.js ~ line 181 ~ loadMore ~ noOfElements",
-      noOfElements
+  const fetchCards = async (laneId, requestedPage) => {
+    const response = await axios.get(
+      "https://jsonplaceholder.typicode.com/todos"
     );
+
+    setTasks(response.data);
+    if (laneId === "todos") {
+      setScrollTodos(scrollTodos + 10);
+    }
+    if (laneId === "completed") {
+      setScrollCompleted(scrollCompleted + 10);
+    }
   };
+
+  function paginate(requestedPage, laneId) {
+    return fetchCards(laneId, requestedPage);
+  }
 
   return (
     <div className="App">
@@ -160,6 +159,7 @@ function App() {
               backgroundRepeat: "no-repeat",
             }}
             onMouseMove={handleMouseMove}
+            onLaneScroll={paginate}
           />
         </LazyLoad>
       ) : (
@@ -167,10 +167,6 @@ function App() {
           <div className="loader"></div>
         </div>
       )}
-
-      <Button variant="secondary" className="loadmore" onClick={loadMore}>
-        Load More
-      </Button>
 
       <FormSelect
         handleChangeBackground={handleChangeBackground}
