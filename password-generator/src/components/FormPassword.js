@@ -12,7 +12,6 @@ function FormPassword() {
     numbers: true,
     symbols: true,
   });
-  console.log(passGenerator);
 
   const handleLengthPass = (e) => {
     setPassGenerator({
@@ -48,13 +47,7 @@ function FormPassword() {
     });
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setPassGenerator({ ...passGenerator, [name]: value });
-  };
-
   const generatePassword = (e) => {
-    // let listChars = "";
     let seedPassword = "";
 
     e.preventDefault();
@@ -68,42 +61,28 @@ function FormPassword() {
     if (passGenerator.uppercase) {
       const uppercaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
       const random = Math.floor(Math.random() * uppercaseChars.length);
-      // listChars += uppercaseChars;
       seedPassword += uppercaseChars[random];
     }
     if (passGenerator.lowercase) {
       const lowercaseChars = "abcdefghijklmnopqrstuvwxyz";
       const random = Math.floor(Math.random() * lowercaseChars.length);
-      // listChars += lowercaseChars;
       seedPassword += lowercaseChars[random];
     }
     if (passGenerator.numbers) {
       const numbersChars = "0123456789";
       const random = Math.floor(Math.random() * numbersChars.length);
-      // listChars += numbersChars;
       seedPassword += numbersChars[random];
     }
     if (passGenerator.symbols) {
       const symbolsChars = "!@#$%^&*()";
       const random = Math.floor(Math.random() * symbolsChars.length);
-      // listChars += symbolsChars;
       seedPassword += symbolsChars[random];
       console.log("symbols char: " + seedPassword);
     }
 
-    // const newPass = creatPassword(listChars)
-    //   .split("")
-    //   .sort(function () {
-    //     return 0.5 - Math.random();
-    //   })
-    //   .join("");
-
-    // console.log("newPass: " + newPass);
-    // console.log('seedPassword: '+seedPassword);
-
     const creatPassword = (listChars) => {
 
-      if (passGenerator.length == 4) {
+      if (passGenerator.length === 4) {
         for (let i = 0; i < passGenerator.length; i++) {
           return listChars;
         }
@@ -115,12 +94,10 @@ function FormPassword() {
           let random = Math.floor(Math.random() * listChars.length);
           newPass += listChars[random];
         }
-        console.log("newpass"+newPass);
         return newPass;
 
       }
 
-      console.log("seedPassword: " + listChars);
     };
 
     setTextInput(creatPassword(seedPassword));

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Board from "react-trello";
-import axios from "axios";
 import FormModal from "./components/FormModal";
 import LazyLoad from "react-lazyload";
 import FormSelect from "./components/FormSelect";
+import { getTodos, getUsers } from "./api";
 
 function App() {
   const [tasks, setTasks] = useState([]);
@@ -11,19 +11,15 @@ function App() {
   const [edit, setEdit] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [bg, setBg] = useState("");
-  const [scrollTodos, setScrollTodos] = useState(10);
-  const [scrollCompleted, setScrollCompleted] = useState(10);
+  const [scrollTodos, setScrollTodos] = useState(20);
+  const [scrollCompleted, setScrollCompleted] = useState(20);
 
   const fetchDataTodos = async () => {
-    const response = await axios.get(
-      "https://jsonplaceholder.typicode.com/todos"
-    );
-    setTasks(response.data.slice(0, 20));
+    const response = await getTodos();
+    setTasks(response.data);
   };
   const fetchDataUsers = async () => {
-    const response = await axios.get(
-      "https://jsonplaceholder.typicode.com/users"
-    );
+    const response = await getUsers();
     setUsers(response.data);
   };
   useEffect(() => {
@@ -95,13 +91,9 @@ function App() {
   };
 
   const handleCardClick = (id) => {
-    console.log("🚀 ~ file: App.js ~ line 77 ~ handleCardClick ~ id", id);
     setShowModal(true);
     const metaData = tasks.find((task) => task.id === id);
-    console.log(
-      "🚀 ~ file: App.js ~ line 77 ~ handleCardClick ~ metaData",
-      metaData
-    );
+
     setEdit(metaData);
   };
 
@@ -109,10 +101,6 @@ function App() {
 
   const handleChangeBackground = (e) => {
     const event = e.target.value;
-    console.log(
-      "🚀 ~ file: App.js ~ line 150 ~ handleChangeBackground ~ event",
-      event
-    );
     setBg(event);
   };
 
@@ -127,11 +115,9 @@ function App() {
   };
 
   const fetchCards = async (laneId, requestedPage) => {
-    const response = await axios.get(
-      "https://jsonplaceholder.typicode.com/todos"
-    );
+    const response = await getTodos();
 
-    setTasks(response.data);
+    setTasks(response);
     if (laneId === "todos") {
       setScrollTodos(scrollTodos + 10);
     }

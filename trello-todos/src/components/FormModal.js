@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button } from "react-bootstrap";
-import axios from "axios";
+import { editTodo } from "../api";
 
 function FormModal({
   users,
@@ -11,52 +11,38 @@ function FormModal({
   setTasks,
   tasks,
 }) {
-
   const inputTitle = edit?.title;
-  console.log(
-    "🚀 ~ file: FormModal.js ~ line 8 ~ FormModal ~ inputTitle",
-    inputTitle
-  );
 
   const [title, setTitle] = useState();
-  console.log("🚀 ~ file: FormModal.js ~ line 13 ~ FormModal ~ title", title);
 
   useEffect(() => {
     setTitle(inputTitle);
   }, [edit]);
 
   const EditData = async (id, data) => {
-    await axios
-      .put(`https://jsonplaceholder.typicode.com/todos/${id}`, data)
-      .then((res) => {
-        const newTask = tasks.map((task) => {
-          if (task.id === res.data.id) {
-            return res.data;
-          }
-          return task;
-        });
-        setTasks(newTask);
-      });
+    const res = await editTodo(id, data);
+    const newTask = tasks.map((task) => {
+      if (task.id === res.data.id) {
+        return res.data;
+      }
+      return task;
+    });
+    setTasks(newTask);
   };
 
   const handleSubmitForm = (data) => {
     EditData(edit.id, edit);
-    console.log(
-      "🚀 ~ file: FormModal.js ~ line 27 ~ handleSubmitForm ~ edit.data",
-      edit
-    );
     handleClose();
   };
 
   const handleChangeInput = (e) => {
     setTitle(e.target.value);
-    setEdit({...edit, title: e.target.value});
+    setEdit({ ...edit, title: e.target.value });
   };
 
   const handleChangeStatus = (e) => {
-    console.log(e.target.value);
     const convertCompleted = Boolean(e.target.value);
-    setEdit({...edit, completed: convertCompleted});
+    setEdit({ ...edit, completed: convertCompleted });
   };
 
   return (
