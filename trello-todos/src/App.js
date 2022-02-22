@@ -117,7 +117,7 @@ function App() {
   const fetchCards = async (laneId, requestedPage) => {
     const response = await getTodos();
 
-    setTasks(response);
+    setTasks(response.data);
     if (laneId === "todos") {
       setScrollTodos(scrollTodos + 10);
     }

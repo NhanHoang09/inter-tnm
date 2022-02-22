@@ -11,9 +11,9 @@ function FormModal({
   setTasks,
   tasks,
 }) {
-  const inputTitle = edit?.title;
-
   const [title, setTitle] = useState();
+
+  const inputTitle = edit?.title;
 
   useEffect(() => {
     setTitle(inputTitle);
@@ -41,7 +41,7 @@ function FormModal({
   };
 
   const handleChangeStatus = (e) => {
-    const convertCompleted = Boolean(e.target.value);
+    const convertCompleted = !!e.target.value;
     setEdit({ ...edit, completed: convertCompleted });
   };
 
