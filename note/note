@@ -1,0 +1,9 @@
+1. convert number to string:
+	item.id.toString() -> item.id	 + '' 
+	exam:  const number = 123; //typeof number
+				 const convertNumber = number + '' // typeof stringn
+2. convet qua boolean bang !!: 
+		Boolean(e.target.value) -> !!e.target.value
+3. Nen su dung toan tu && thay vi if hoac toan tu 3 ngoi
+		exam: {pokemon.length > 0 ? <ListPokemon /> : null}
+		--> {pokemon.length && <ListPokemon />}

@@ -34,6 +34,9 @@
         ],
         "trellotodolist": [
           "trello-todolist-inter-tnm"
+        ],
+        "trellotodolistnew": [
+          "trellotodolistnew-intern-tnm"
         ]
       }
     }
