@@ -9,7 +9,7 @@ import "./App.css";
 function App() {
   const [tasks, setTasks] = useState([]);
   const [todos, setTodos] = useState([]);
-  const [todosComplated, setTodosComplated] = useState([]);
+  const [todosCompleted, settodosCompleted] = useState([]);
   const [pageTodos, setPageTodos] = useState(1);
   const [pageCompleted, setPageCompleted] = useState(1);
   const [users, setUsers] = useState([]);
@@ -19,7 +19,7 @@ function App() {
 
   const fetchDataTodosCompleted = async () => {
     const response = await getTodosCompleted(pageCompleted);
-    setTodosComplated(response.data);
+    settodosCompleted(response.data);
   };
 
   const fetchDataTodos = async () => {
@@ -81,7 +81,7 @@ function App() {
         setPageCompleted(pageCompleted + 1);
         const response = await getTodos(pageCompleted);
         const newTodosCompleted = [...todos, ...response.data];
-        setTodosComplated(newTodosCompleted);
+        settodosCompleted(newTodosCompleted);
       } else {
         alert("No more tasks to load");
       }
@@ -102,7 +102,7 @@ function App() {
       {tasks.length > 0 ? (
         <ListTodosCard
           todos={todos}
-          todosComplated={todosComplated}
+          todosCompleted={todosCompleted}
           handleLoadMore={handleLoadMore}
           handleCardClick={handleCardClick}
         />

@@ -1,31 +1,31 @@
-import React, { useState, useEffect, useRef } from "react";
-import { v4 } from "uuid";
+import React, { useState, useEffect, Suspense } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import LazyLoad from "react-lazyload";
-import ScrollArea from "react-scrollbar";
 import Button from "react-bootstrap/Button";
+
+const TodoCard = React.lazy(() => import("../components/TodoCard"));
 
 function ListTodosCard({
   todos,
-  todosComplated,
+  todosCompleted,
   handleCardClick,
   handleLoadMore,
 }) {
   const columnsFromBackend = {
-    [v4()]: {
+    1: {
       name: "Todos",
       items: todos,
     },
-    [v4()]: {
+    2: {
       name: "Completed",
-      items: todosComplated,
+      items: todosCompleted,
     },
   };
 
   const [columns, setColumns] = useState(columnsFromBackend);
   useEffect(() => {
     setColumns(columnsFromBackend);
-  }, [todos, todosComplated]);
+  }, [todos, todosCompleted]);
 
   const onDragEnd = (result, columns, setColumns) => {
     if (!result.destination) return;
@@ -101,47 +101,37 @@ function ListTodosCard({
                       <p style={{ marginBottom: 0, fontWeight: "bold" }}>
                         {column.name.toUpperCase()}
                       </p>
-                      {/* <ScrollArea style={{ width: "300", height:"90%", marginBottom: 6}}> */}
-                      {column.items.map((item, index) => {
-                        return (
-                          <Draggable
-                            key={item.id}
-                            draggableId={item.id + ""}
-                            index={index}
-                          >
-                            {(provided, snapshot) => {
-                              return (
-                                <LazyLoad height={100} offset={100} once>
-                                  <div
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    {...provided.dragHandleProps}
-                                    style={{
-                                      userSelect: "none",
-                                      padding: 16,
-                                      margin: "0 0 6px 0",
-                                      minHeight: "50px",
-                                      borderRadius: 5,
-                                      boxShadow: "rgb(0 0 0 / 10%) 0px 0px 5px",
-                                      textColor: "#172b4d",
-                                      backgroundColor: snapshot.isDragging
-                                        ? "#263B4A"
-                                        : "#456C86",
-                                      color: "white",
-                                      ...provided.draggableProps.style,
-                                    }}
-                                    onClick={() => handleCardClick(item.id)}
-                                  >
-                                    {item.title}
-                                  </div>
-                                </LazyLoad>
-                              );
-                            }}
-                          </Draggable>
-                        );
-                      })}
-                      {provided.placeholder}
-                      {/* </ScrollArea> */}
+                      <div
+                        style={{
+                          maxHeight: "calc(100vh - 102px)",
+                          overflowY: "auto",
+                        }}
+                      >
+                        {column.items.map((item, index) => {
+                          return (
+                            // <LazyLoad height={100} offset={100}>
+                            <Draggable
+                              key={item.id}
+                              draggableId={item.id + ""}
+                              index={index}
+                            >
+                              {(provided, snapshot) => {
+                                return (
+                                  <Suspense fallback={<div>Loading...</div>}>
+                                    <TodoCard
+                                      item={item}
+                                      provided={provided}
+                                      snapshot={snapshot}
+                                      handleCardClick={handleCardClick}
+                                    />
+                                  </Suspense>
+                                );
+                              }}
+                            </Draggable>
+                            // </LazyLoad>
+                          );
+                        })}
+                      </div>
                       <Button
                         variant="primary"
                         onClick={() => handleLoadMore(column.name)}
