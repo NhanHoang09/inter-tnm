@@ -2,8 +2,17 @@
 	item.id.toString() -> item.id	 + '' 
 	exam:  const number = 123; //typeof number
 				 const convertNumber = number + '' // typeof stringn
+
 2. convet qua boolean bang !!: 
 		Boolean(e.target.value) -> !!e.target.value
+
 3. Nen su dung toan tu && thay vi if hoac toan tu 3 ngoi
 		exam: {pokemon.length > 0 ? <ListPokemon /> : null}
 		--> {pokemon.length && <ListPokemon />}
+
+4. cấu trúc thư mục cơ bản nhất sẽ đc phân làm mấy folder chính như sau:
+		- components: ai cũng biết
+		- containers/pages: thường sẽ là component cha bọc ngoài, hoặc định nghĩa 1 page
+		- utils/helpers: định nghĩa mấy function thường được dùng chung như mấy hàm convert, tính toán gì đó, hoặc mấy constants...
+		- assets: chứa mấy fonts, icon, images,...
+		- services/api: mấy tác vụ liên quan đến server thường là call api
