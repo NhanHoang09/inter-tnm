@@ -1,9 +1,9 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import LazyLoad from "react-lazyload";
 import Button from "react-bootstrap/Button";
+import TodoCard from "../components/TodoCard";
 
-const TodoCard = React.lazy(() => import("../components/TodoCard"));
+// const TodoCard = React.lazy(() => import("../components/TodoCard"));
 
 function ListTodosCard({
   todos,
@@ -76,10 +76,10 @@ function ListTodosCard({
               flexDirection: "column",
               alignItems: "center",
             }}
-            key={columnId}
+            key={index}
           >
             <div style={{ margin: 8 }}>
-              <Droppable droppableId={columnId} key={columnId}>
+              <Droppable droppableId={columnId}>
                 {(provided, snapshot) => {
                   return (
                     <div
@@ -109,26 +109,22 @@ function ListTodosCard({
                       >
                         {column.items.map((item, index) => {
                           return (
-                            // <LazyLoad height={100} offset={100}>
-                            <Draggable
-                              key={item.id}
-                              draggableId={item.id + ""}
-                              index={index}
-                            >
-                              {(provided, snapshot) => {
-                                return (
-                                  <Suspense fallback={<div>Loading...</div>}>
+                              <Draggable
+                                key={item.id}
+                                draggableId={item.id + ""}
+                                index={index}
+                              >
+                                {(provided, snapshot) => {
+                                  return (
                                     <TodoCard
                                       item={item}
                                       provided={provided}
                                       snapshot={snapshot}
                                       handleCardClick={handleCardClick}
                                     />
-                                  </Suspense>
-                                );
-                              }}
-                            </Draggable>
-                            // </LazyLoad>
+                                  );
+                                }}
+                              </Draggable>
                           );
                         })}
                       </div>
