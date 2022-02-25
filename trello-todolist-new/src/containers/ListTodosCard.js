@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { v4 } from "uuid";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import LazyLoad from "react-lazyload";
@@ -101,6 +101,7 @@ function ListTodosCard({
                       <p style={{ marginBottom: 0, fontWeight: "bold" }}>
                         {column.name.toUpperCase()}
                       </p>
+                      {/* <ScrollArea style={{ width: "300", height:"90%", marginBottom: 6}}> */}
                       {column.items.map((item, index) => {
                         return (
                           <Draggable
@@ -140,6 +141,7 @@ function ListTodosCard({
                         );
                       })}
                       {provided.placeholder}
+                      {/* </ScrollArea> */}
                       <Button
                         variant="primary"
                         onClick={() => handleLoadMore(column.name)}
