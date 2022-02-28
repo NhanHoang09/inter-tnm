@@ -1,30 +1,40 @@
 import React from "react";
-import LazyLoad from "react-lazyload";
+import { Draggable } from "react-beautiful-dnd";
 
-function TodoCard({ item, provided, snapshot, handleCardClick }) {
+function TodoCard({
+  item,
+  provided,
+  snapshot,
+  handleCardClick,
+  handleRemoveCard,
+}) {
   return (
-    <LazyLoad height={"100%"} >
-      <div
-        ref={provided.innerRef}
-        {...provided.draggableProps}
-        {...provided.dragHandleProps}
-        style={{
-          userSelect: "none",
-          padding: 16,
-          margin: "0 0 6px 0",
-          minHeight: "50px",
-          borderRadius: 5,
-          boxShadow: "rgb(0 0 0 / 10%) 0px 0px 5px",
-          textColor: "#172b4d",
-          backgroundColor: snapshot.isDragging ? "#263B4A" : "#456C86",
-          color: "white",
-          ...provided.draggableProps.style,
+      <Draggable key={item.id} draggableId={item.id + ""} index={item.id}>
+        {(provided, snapshot) => {
+          return (
+            <div
+              ref={provided.innerRef}
+              {...provided.draggableProps}
+              {...provided.dragHandleProps}
+              style={{
+                userSelect: "none",
+                padding: 16,
+                margin: "0 0 6px 0",
+                minHeight: "50px",
+                borderRadius: 5,
+                boxShadow: "rgb(0 0 0 / 10%) 0px 0px 5px",
+                textColor: "#172b4d",
+                backgroundColor: snapshot.isDragging ? "#263B4A" : "#456C86",
+                color: "white",
+                ...provided.draggableProps.style,
+              }}
+              onClick={() => handleCardClick(item.id)}
+            >
+              {item.title}
+            </div>
+          );
         }}
-        onClick={() => handleCardClick(item.id)}
-      >
-        {item.title}
-      </div>
-    </LazyLoad>
+      </Draggable>
   );
 }
 

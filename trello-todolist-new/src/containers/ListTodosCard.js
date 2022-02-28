@@ -1,15 +1,14 @@
 import React, { useState, useEffect, Suspense } from "react";
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import Button from "react-bootstrap/Button";
-import TodoCard from "../components/TodoCard";
+import { DragDropContext, Droppable } from "react-beautiful-dnd";
 
-// const TodoCard = React.lazy(() => import("../components/TodoCard"));
+const TodoCard = React.lazy(() => import("../components/TodoCard"));
 
 function ListTodosCard({
   todos,
   todosCompleted,
   handleCardClick,
-  handleLoadMore,
+  handleRemoveCard,
+  handleScroll,
 }) {
   const columnsFromBackend = {
     1: {
@@ -106,34 +105,22 @@ function ListTodosCard({
                           maxHeight: "calc(100vh - 102px)",
                           overflowY: "auto",
                         }}
+                        onScroll={() => handleScroll(column.name)}
                       >
                         {column.items.map((item, index) => {
                           return (
-                              <Draggable
-                                key={item.id}
-                                draggableId={item.id + ""}
-                                index={index}
-                              >
-                                {(provided, snapshot) => {
-                                  return (
-                                    <TodoCard
-                                      item={item}
-                                      provided={provided}
-                                      snapshot={snapshot}
-                                      handleCardClick={handleCardClick}
-                                    />
-                                  );
-                                }}
-                              </Draggable>
+                            <Suspense fallback={<p>Loading...</p>}>
+                              <TodoCard
+                                item={item}
+                                provided={provided}
+                                snapshot={snapshot}
+                                handleCardClick={handleCardClick}
+                                handleRemoveCard={handleRemoveCard}
+                              />
+                            </Suspense>
                           );
                         })}
                       </div>
-                      <Button
-                        variant="primary"
-                        onClick={() => handleLoadMore(column.name)}
-                      >
-                        Load more
-                      </Button>
                     </div>
                   );
                 }}

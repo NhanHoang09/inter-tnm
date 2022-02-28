@@ -185,3 +185,17 @@ header {
     transform: rotate(360deg);
   }
 }
+
+/* .card {
+  position: absolute;
+}
+
+.card:hover .remove {
+  display: block;
+}
+*/
+
+.remove {
+
+  cursor: pointer;
+} 
