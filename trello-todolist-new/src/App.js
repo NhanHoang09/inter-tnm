@@ -83,11 +83,12 @@ function App() {
     }px) calc(50% + ${e.nativeEvent.offsetY / 200}px)`;
   };
 
-  const listInnerRef = useRef();
+  const todosRef = useRef();
+  const todoCompletedRef = useRef();
 
   const handleScroll = async (nameColumn) => {
-    if (listInnerRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
+    if (todosRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = todosRef.current;
       if (scrollTop + clientHeight === scrollHeight) {
         //fetchdata
         if (nameColumn === "Todos") {
@@ -96,56 +97,53 @@ function App() {
             const response = await getTodos(pageTodos);
             const newTodos = [...todos, ...response.data];
             setTodos(newTodos);
-            console.log("reached bottom");
           }
         }
+      }
+    }
+    if (todoCompletedRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } =
+        todoCompletedRef.current;
+      if (scrollTop + clientHeight === scrollHeight) {
         if (nameColumn === "Completed") {
           if (pageCompleted < 10) {
             setPageCompleted(pageCompleted + 1);
             const response = await getTodos(pageCompleted);
             const newTodosCompleted = [...todosCompleted, ...response.data];
             setTodosCompleted(newTodosCompleted);
-            console.log("reached bottom");
           }
         }
       }
     }
-
-    // const onScroll = () => {
-    //   if (listInnerRef.current) {
-    //     const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
-    //     if (scrollTop + clientHeight === scrollHeight) {
-    //       console.log("reached bottom");
-    //     }
-    //   }
-    // };
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        height: "100%",
-        backgroundImage: `url(${bg})`,
-        backgroundPosition: "center",
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
-      }}
-      onMouseMove={handleMouseMove}
-    >
-      {tasks.length > 0 ? (
-        <ListTodosCard
-          todos={todos}
-          todosCompleted={todosCompleted}
-          handleCardClick={handleCardClick}
-          handleRemoveCard={handleRemoveCard}
-          handleScroll={handleScroll}
-          listInnerRef={listInnerRef}
-        />
-      ) : (
-        <Loading />
-      )}
-
+    <>
+      <div
+        style={{
+          display: "flex",
+          height: "100vh",
+          backgroundImage: `url(${bg})`,
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+        }}
+        // onMouseMove={handleMouseMove}
+      >
+        {tasks.length > 0 ? (
+          <ListTodosCard
+            todos={todos}
+            todosCompleted={todosCompleted}
+            handleCardClick={handleCardClick}
+            handleRemoveCard={handleRemoveCard}
+            handleScroll={handleScroll}
+            todosRef={todosRef}
+            todoCompletedRef={todoCompletedRef}
+          />
+        ) : (
+          <Loading />
+        )}
+      </div>
       <FormSelect
         handleChangeBackground={handleChangeBackground}
         handleSetDefaultBackground={handleSetDefaultBackground}
@@ -164,7 +162,7 @@ function App() {
         setTodos={setTodos}
         setTodosCompleted={setTodosCompleted}
       />
-    </div>
+    </>
   );
 }
 

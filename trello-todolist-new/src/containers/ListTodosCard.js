@@ -8,16 +8,22 @@ function ListTodosCard({
   handleCardClick,
   handleRemoveCard,
   handleScroll,
-  listInnerRef,
+  todosRef,
+  todoCompletedRef,
 }) {
   const columnsFromBackend = {
     1: {
       name: "Todos",
       items: todos,
+      ref:todosRef
+
+      
     },
     2: {
       name: "Completed",
       items: todosCompleted,
+      ref:todoCompletedRef
+
     },
   };
 
@@ -106,7 +112,7 @@ function ListTodosCard({
                           overflowY: "auto",
                         }}
                         onScroll={() => handleScroll(column.name)}
-                        ref={listInnerRef}
+                        ref={column.ref}
                       >
                         {column.items.map((item, index) => {
                           return (
