@@ -1,7 +1,6 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
-
-const TodoCard = React.lazy(() => import("../components/TodoCard"));
+import TodoCard from "../components/TodoCard";
 
 function ListTodosCard({
   todos,
@@ -9,6 +8,7 @@ function ListTodosCard({
   handleCardClick,
   handleRemoveCard,
   handleScroll,
+  listInnerRef,
 }) {
   const columnsFromBackend = {
     1: {
@@ -75,10 +75,10 @@ function ListTodosCard({
               flexDirection: "column",
               alignItems: "center",
             }}
-            key={index}
+            key={columnId}
           >
             <div style={{ margin: 8 }}>
-              <Droppable droppableId={columnId}>
+              <Droppable droppableId={columnId} key={columnId}>
                 {(provided, snapshot) => {
                   return (
                     <div
@@ -106,12 +106,14 @@ function ListTodosCard({
                           overflowY: "auto",
                         }}
                         onScroll={() => handleScroll(column.name)}
+                        ref={listInnerRef}
                       >
                         {column.items.map((item, index) => {
                           return (
                             <Suspense fallback={<p>Loading...</p>}>
                               <TodoCard
                                 item={item}
+                                index={index}
                                 provided={provided}
                                 snapshot={snapshot}
                                 handleCardClick={handleCardClick}
@@ -121,6 +123,7 @@ function ListTodosCard({
                           );
                         })}
                       </div>
+                      {provided.placeholder}
                     </div>
                   );
                 }}

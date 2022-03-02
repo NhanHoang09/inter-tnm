@@ -1,17 +1,11 @@
 import React from "react";
 import { Draggable } from "react-beautiful-dnd";
 
-function TodoCard({
-  item,
-  provided,
-  snapshot,
-  handleCardClick,
-  handleRemoveCard,
-}) {
+function TodoCard({ item, index, handleCardClick }) {
   return (
-      <Draggable key={item.id} draggableId={item.id + ""} index={item.id}>
-        {(provided, snapshot) => {
-          return (
+    <Draggable key={item.id} draggableId={item.id + ""} index={index}>
+      {(provided, snapshot) => {
+        return (
             <div
               ref={provided.innerRef}
               {...provided.draggableProps}
@@ -32,9 +26,9 @@ function TodoCard({
             >
               {item.title}
             </div>
-          );
-        }}
-      </Draggable>
+        );
+      }}
+    </Draggable>
   );
 }
 

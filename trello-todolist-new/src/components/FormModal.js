@@ -10,6 +10,10 @@ function FormModal({
   setEdit,
   setTasks,
   tasks,
+  todos,
+  setTodos,
+  todosCompleted,
+  setTodosCompleted,
 }) {
   const [title, setTitle] = useState();
 
@@ -21,13 +25,24 @@ function FormModal({
 
   const EditData = async (id, data) => {
     const res = await editTodo(id, data);
-    const newTask = tasks.map((task) => {
-      if (task.id === res.data.id) {
-        return res.data;
-      }
-      return task;
-    });
-    setTasks(newTask);
+    if (data.completed === false) {
+      const newTodos = todos.map((todo) => {
+        if (todo.id === res.data.id) {
+          return res.data;
+        }
+        return todo;
+      });
+      setTodos(newTodos);
+    }
+    if (data.completed === true) {
+      const newTodosCompleted = todosCompleted.map((todo) => {
+        if (todo.id === res.data.id) {
+          return res.data;
+        }
+        return todo;
+      });
+      setTodosCompleted(newTodosCompleted);
+    }
   };
 
   const handleSubmitForm = (data) => {

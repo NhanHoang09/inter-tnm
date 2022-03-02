@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { getAllTodos, getTodosCompleted, getTodos, getUsers } from "./api";
 import FormSelect from "./components/FormSelect";
 import FormModal from "./components/FormModal";
@@ -10,7 +10,7 @@ import "./App.css";
 function App() {
   const [tasks, setTasks] = useState([]);
   const [todos, setTodos] = useState([]);
-  const [todosCompleted, settodosCompleted] = useState([]);
+  const [todosCompleted, setTodosCompleted] = useState([]);
   const [pageTodos, setPageTodos] = useState(1);
   const [pageCompleted, setPageCompleted] = useState(1);
   const [users, setUsers] = useState([]);
@@ -20,7 +20,7 @@ function App() {
 
   const fetchDataTodosCompleted = async () => {
     const response = await getTodosCompleted(pageCompleted);
-    settodosCompleted(response.data);
+    setTodosCompleted(response.data);
   };
 
   const fetchDataTodos = async () => {
@@ -83,28 +83,42 @@ function App() {
     }px) calc(50% + ${e.nativeEvent.offsetY / 200}px)`;
   };
 
+  const listInnerRef = useRef();
+
   const handleScroll = async (nameColumn) => {
-    let userScrollHeight = window.innerHeight + window.scrollY;
-    let windowBottomHeight = document.documentElement.offsetHeight;
-    if (userScrollHeight >= windowBottomHeight) {
-      //fetchdata
-      if (nameColumn === "Todos") {
-        if (pageTodos < 10) {
-          setPageTodos(pageTodos + 1);
-          const response = await getTodos(pageTodos);
-          const newTodos = [...todos, ...response.data];
-          setTodos(newTodos);
+    if (listInnerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
+      if (scrollTop + clientHeight === scrollHeight) {
+        //fetchdata
+        if (nameColumn === "Todos") {
+          if (pageTodos < 10) {
+            setPageTodos(pageTodos + 1);
+            const response = await getTodos(pageTodos);
+            const newTodos = [...todos, ...response.data];
+            setTodos(newTodos);
+            console.log("reached bottom");
+          }
         }
-      }
-      if (nameColumn === "Completed") {
-        if (pageCompleted < 10) {
-          setPageCompleted(pageCompleted + 1);
-          const response = await getTodos(pageCompleted);
-          const newTodosCompleted = [...todosCompleted, ...response.data];
-          settodosCompleted(newTodosCompleted);
+        if (nameColumn === "Completed") {
+          if (pageCompleted < 10) {
+            setPageCompleted(pageCompleted + 1);
+            const response = await getTodos(pageCompleted);
+            const newTodosCompleted = [...todosCompleted, ...response.data];
+            setTodosCompleted(newTodosCompleted);
+            console.log("reached bottom");
+          }
         }
       }
     }
+
+    // const onScroll = () => {
+    //   if (listInnerRef.current) {
+    //     const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
+    //     if (scrollTop + clientHeight === scrollHeight) {
+    //       console.log("reached bottom");
+    //     }
+    //   }
+    // };
   };
 
   return (
@@ -126,6 +140,7 @@ function App() {
           handleCardClick={handleCardClick}
           handleRemoveCard={handleRemoveCard}
           handleScroll={handleScroll}
+          listInnerRef={listInnerRef}
         />
       ) : (
         <Loading />
@@ -144,6 +159,10 @@ function App() {
         setEdit={setEdit}
         setTasks={setTasks}
         tasks={tasks}
+        todos={todos}
+        todosCompleted={todosCompleted}
+        setTodos={setTodos}
+        setTodosCompleted={setTodosCompleted}
       />
     </div>
   );
