@@ -1,16 +1,22 @@
 import React, { useState, useEffect, useRef } from "react";
-import { getAllTodos, getTodosCompleted, getTodos, getUsers } from "./api";
+import {
+  getAllTodos,
+  getTodosCompleted,
+  getTodos,
+  getUsers,
+  editTodo,
+} from "./api";
 import FormSelect from "./components/FormSelect";
 import FormModal from "./components/FormModal";
+import Loading from "./components/Loading";
 import ListTodosCard from "./containers/ListTodosCard";
 import InitBg from "./assets/InitBg.jpg";
-import Loading from "./components/Loading";
 import "./App.css";
 
 function App() {
-  const [tasks, setTasks] = useState([]);
   const [todos, setTodos] = useState([]);
   const [todosCompleted, setTodosCompleted] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [pageTodos, setPageTodos] = useState(1);
   const [pageCompleted, setPageCompleted] = useState(1);
   const [users, setUsers] = useState([]);
@@ -18,18 +24,19 @@ function App() {
   const [showModal, setShowModal] = useState(false);
   const [bg, setBg] = useState(InitBg);
 
+  const todosRef = useRef();
+  const todoCompletedRef = useRef();
+
   const fetchDataTodosCompleted = async () => {
+    setLoading(true);
     const response = await getTodosCompleted(pageCompleted);
     setTodosCompleted(response.data);
+    setLoading(false);
   };
 
   const fetchDataTodos = async () => {
     const response = await getTodos(pageTodos);
     setTodos(response.data);
-  };
-  const fetchAllDataTodos = async () => {
-    const response = await getAllTodos();
-    setTasks(response.data);
   };
 
   const fetchDataUsers = async () => {
@@ -37,34 +44,43 @@ function App() {
     setUsers(response.data);
   };
   useEffect(() => {
-    fetchAllDataTodos();
     fetchDataTodosCompleted();
     fetchDataTodos();
     fetchDataUsers();
   }, []);
 
-  // const handleScroll = () => {
-  //   if (
-  //     window.innerHeight + document.documentElement.scrollTop ===
-  //     document.documentElement.offsetHeight
-  //   ) {
-  //     setPageTodos(pageTodos + 1);
-  //     setPageCompleted(pageCompleted + 1);
-  //     fetchDataTodos();
-  //     fetchDataTodosCompleted();
-  //   }
-  // };
-
-  const handleCardClick = (id) => {
+  const handleCardClick = (id, completed) => {
     setShowModal(true);
-    const metaData = tasks.find((task) => task.id === id);
 
-    setEdit(metaData);
+    if (completed === false) {
+      setEdit(todos.find((todo) => todo.id === id));
+    }
+    if (completed === true) {
+      setEdit(todosCompleted.find((todo) => todo.id === id));
+    }
   };
 
-  const handleRemoveCard = (id) => {
-    const newTasks = tasks.filter((task) => task.id !== id);
-    setTasks(newTasks);
+  const EditData = async (id, data) => {
+    const res = await editTodo(id, data);
+
+    if (data.completed === false) {
+      const newTodos = todos.map((todo) => {
+        if (todo.id === res.data.id) {
+          return res.data;
+        }
+        return todo;
+      });
+      setTodos(newTodos);
+    }
+    if (data.completed === true) {
+      const newTodosCompleted = todosCompleted.map((todo) => {
+        if (todo.id === res.data.id) {
+          return res.data;
+        }
+        return todo;
+      });
+      setTodosCompleted(newTodosCompleted);
+    }
   };
 
   const handleClose = () => setShowModal(false);
@@ -83,14 +99,10 @@ function App() {
     }px) calc(50% + ${e.nativeEvent.offsetY / 200}px)`;
   };
 
-  const todosRef = useRef();
-  const todoCompletedRef = useRef();
-
   const handleScroll = async (nameColumn) => {
     if (todosRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = todosRef.current;
       if (scrollTop + clientHeight === scrollHeight) {
-        //fetchdata
         if (nameColumn === "Todos") {
           if (pageTodos < 10) {
             setPageTodos(pageTodos + 1);
@@ -117,6 +129,10 @@ function App() {
     }
   };
 
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <>
       <div
@@ -130,19 +146,14 @@ function App() {
         }}
         // onMouseMove={handleMouseMove}
       >
-        {tasks.length > 0 ? (
-          <ListTodosCard
-            todos={todos}
-            todosCompleted={todosCompleted}
-            handleCardClick={handleCardClick}
-            handleRemoveCard={handleRemoveCard}
-            handleScroll={handleScroll}
-            todosRef={todosRef}
-            todoCompletedRef={todoCompletedRef}
-          />
-        ) : (
-          <Loading />
-        )}
+        <ListTodosCard
+          todos={todos}
+          todosCompleted={todosCompleted}
+          handleCardClick={handleCardClick}
+          handleScroll={handleScroll}
+          todosRef={todosRef}
+          todoCompletedRef={todoCompletedRef}
+        />
       </div>
       <FormSelect
         handleChangeBackground={handleChangeBackground}
@@ -155,12 +166,7 @@ function App() {
         showModal={showModal}
         edit={edit}
         setEdit={setEdit}
-        setTasks={setTasks}
-        tasks={tasks}
-        todos={todos}
-        todosCompleted={todosCompleted}
-        setTodos={setTodos}
-        setTodosCompleted={setTodosCompleted}
+        EditData={EditData}
       />
     </>
   );

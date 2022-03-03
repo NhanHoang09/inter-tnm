@@ -15,15 +15,12 @@ function ListTodosCard({
     1: {
       name: "Todos",
       items: todos,
-      ref:todosRef
-
-      
+      ref: todosRef,
     },
     2: {
       name: "Completed",
       items: todosCompleted,
-      ref:todoCompletedRef
-
+      ref: todoCompletedRef,
     },
   };
 
@@ -39,10 +36,14 @@ function ListTodosCard({
     if (source.droppableId !== destination.droppableId) {
       const sourceColumn = columns[source.droppableId];
       const destColumn = columns[destination.droppableId];
+
       const sourceItems = [...sourceColumn.items];
       const destItems = [...destColumn.items];
+
       const [removed] = sourceItems.splice(source.index, 1);
+
       destItems.splice(destination.index, 0, removed);
+
       setColumns({
         ...columns,
         [source.droppableId]: {
@@ -81,10 +82,10 @@ function ListTodosCard({
               flexDirection: "column",
               alignItems: "center",
             }}
-            key={columnId}
+            key={index}
           >
             <div style={{ margin: 8 }}>
-              <Droppable droppableId={columnId} key={columnId}>
+              <Droppable droppableId={columnId} key={index}>
                 {(provided, snapshot) => {
                   return (
                     <div
@@ -116,7 +117,7 @@ function ListTodosCard({
                       >
                         {column.items.map((item, index) => {
                           return (
-                            <Suspense fallback={<p>Loading...</p>}>
+                            <Suspense fallback={<p>Loading...</p>} key={index}>
                               <TodoCard
                                 item={item}
                                 index={index}

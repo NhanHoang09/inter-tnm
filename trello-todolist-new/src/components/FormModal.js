@@ -8,12 +8,7 @@ function FormModal({
   showModal,
   edit,
   setEdit,
-  setTasks,
-  tasks,
-  todos,
-  setTodos,
-  todosCompleted,
-  setTodosCompleted,
+  EditData
 }) {
   const [title, setTitle] = useState();
 
@@ -23,27 +18,7 @@ function FormModal({
     setTitle(inputTitle);
   }, [edit]);
 
-  const EditData = async (id, data) => {
-    const res = await editTodo(id, data);
-    if (data.completed === false) {
-      const newTodos = todos.map((todo) => {
-        if (todo.id === res.data.id) {
-          return res.data;
-        }
-        return todo;
-      });
-      setTodos(newTodos);
-    }
-    if (data.completed === true) {
-      const newTodosCompleted = todosCompleted.map((todo) => {
-        if (todo.id === res.data.id) {
-          return res.data;
-        }
-        return todo;
-      });
-      setTodosCompleted(newTodosCompleted);
-    }
-  };
+
 
   const handleSubmitForm = (data) => {
     EditData(edit.id, edit);

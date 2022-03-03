@@ -3,7 +3,7 @@ import { Draggable } from "react-beautiful-dnd";
 
 function TodoCard({ item, index, handleCardClick }) {
   return (
-    <Draggable key={item.id} draggableId={item.id + ""} index={index}>
+    <Draggable key={item.id} draggableId={item.id+ ''} index={index}>
       {(provided, snapshot) => {
         return (
             <div
@@ -22,7 +22,7 @@ function TodoCard({ item, index, handleCardClick }) {
                 color: "white",
                 ...provided.draggableProps.style,
               }}
-              onClick={() => handleCardClick(item.id)}
+              onClick={() => handleCardClick(item.id, item.completed)}
             >
               {item.title}
             </div>
