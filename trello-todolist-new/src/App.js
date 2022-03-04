@@ -27,16 +27,13 @@ function App() {
     const fetchDataTodos = async () => {
       setLoading(true);
       const responseTodoCompleted = await getTodosCompleted(pageCompleted);
+      const responseTodos = await getTodos(pageTodos);
+      setLoading(false);
       setDataTodos({
-        ...dataTodos,
+        todos: responseTodos.data,
         todosCompleted: responseTodoCompleted.data,
       });
-
-      const responseTodos = await getTodos(pageTodos);
-      setDataTodos({ ...dataTodos, todos: responseTodos.data });
-      setLoading(false);
     };
-    
 
     const fetchDataUsers = async () => {
       const response = await getUsers();

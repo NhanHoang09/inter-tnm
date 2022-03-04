@@ -3,19 +3,13 @@ import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import TodoCard from "../components/TodoCard";
 
 function ListTodosCard({
-  // todos,
-  // todosCompleted,
   handleCardClick,
   handleScroll,
   todosRef,
   todoCompletedRef,
-  // setTodos,
-  // setTodosCompleted
   dataTodos,
   setDataTodos,
 }) {
-
-  console.log(dataTodos)
 
   const columnsFromBackend = {
     1: {
@@ -52,23 +46,23 @@ function ListTodosCard({
 
       destItems.splice(destination.index, 0, newItem);
 
-      // if (sourceColumn.name === "Todos") {
-      //   // setTodos(sourceItems);
-      //   // setTodosCompleted(destItems);
-      //   setDataTodos({
-      //     todos: sourceItems,
-      //     todosCompleted: destItems,
-      //   });
-      // }
+      if (sourceColumn.name === "Todos") {
+        // setTodos(sourceItems);
+        // setTodosCompleted(destItems);
+        setDataTodos({
+          todos: sourceItems,
+          todosCompleted: destItems,
+        });
+      }
 
-      // if (sourceColumn.name === "Completed") {
-      //   // setTodos(destItems);
-      //   // setTodosCompleted(sourceItems);
-      //   setDataTodos({
-      //     todos: destItems,
-      //     todosCompleted: sourceItems,
-      //   });
-      // }
+      if (sourceColumn.name === "Completed") {
+        // setTodos(destItems);
+        // setTodosCompleted(sourceItems);
+        setDataTodos({
+          todos: destItems,
+          todosCompleted: sourceItems,
+        });
+      }
     }
   };
 
