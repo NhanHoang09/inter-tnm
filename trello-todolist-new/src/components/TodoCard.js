@@ -20,6 +20,7 @@ function TodoCard({ item, index, handleCardClick }) {
                 textColor: "#172b4d",
                 backgroundColor: snapshot.isDragging ? "#263B4A" : "#456C86",
                 color: "white",
+                fontSize:"14px",
                 ...provided.draggableProps.style,
               }}
               onClick={() => handleCardClick(item.id, item.completed)}

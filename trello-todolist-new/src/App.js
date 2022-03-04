@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
-  getAllTodos,
   getTodosCompleted,
   getTodos,
   getUsers,
@@ -104,11 +103,13 @@ function App() {
       const { scrollTop, scrollHeight, clientHeight } = todosRef.current;
       if (scrollTop + clientHeight === scrollHeight) {
         if (nameColumn === "Todos") {
+          setPageTodos(pageTodos + 1);
           if (pageTodos < 10) {
-            setPageTodos(pageTodos + 1);
-            const response = await getTodos(pageTodos);
+            const response = await getTodos(pageTodos + 1);
             const newTodos = [...todos, ...response.data];
             setTodos(newTodos);
+          } else {
+            alert("No more data");
           }
         }
       }
@@ -118,11 +119,13 @@ function App() {
         todoCompletedRef.current;
       if (scrollTop + clientHeight === scrollHeight) {
         if (nameColumn === "Completed") {
+          setPageCompleted(pageCompleted + 1);
           if (pageCompleted < 10) {
-            setPageCompleted(pageCompleted + 1);
-            const response = await getTodos(pageCompleted);
+            const response = await getTodosCompleted(pageCompleted + 1);
             const newTodosCompleted = [...todosCompleted, ...response.data];
             setTodosCompleted(newTodosCompleted);
+          } else {
+            alert("No more data");
           }
         }
       }
@@ -153,6 +156,8 @@ function App() {
           handleScroll={handleScroll}
           todosRef={todosRef}
           todoCompletedRef={todoCompletedRef}
+          setTodos={setTodos}
+          setTodosCompleted={setTodosCompleted}
         />
       </div>
       <FormSelect
