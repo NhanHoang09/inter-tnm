@@ -1,10 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  getTodosCompleted,
-  getTodos,
-  getUsers,
-  editTodo,
-} from "./api";
+import { getTodosCompleted, getTodos, getUsers, editTodo } from "./api";
 import FormSelect from "./components/FormSelect";
 import FormModal from "./components/FormModal";
 import Loading from "./components/Loading";
@@ -13,8 +8,10 @@ import InitBg from "./assets/InitBg.jpg";
 import "./App.css";
 
 function App() {
-  const [todos, setTodos] = useState([]);
-  const [todosCompleted, setTodosCompleted] = useState([]);
+  const [dataTodos, setDataTodos] = useState({
+    todos: [],
+    todosCompleted: [],
+  });
   const [loading, setLoading] = useState(true);
   const [pageTodos, setPageTodos] = useState(1);
   const [pageCompleted, setPageCompleted] = useState(1);
@@ -26,24 +23,26 @@ function App() {
   const todosRef = useRef();
   const todoCompletedRef = useRef();
 
-  const fetchDataTodosCompleted = async () => {
-    setLoading(true);
-    const response = await getTodosCompleted(pageCompleted);
-    setTodosCompleted(response.data);
-    setLoading(false);
-  };
-
-  const fetchDataTodos = async () => {
-    const response = await getTodos(pageTodos);
-    setTodos(response.data);
-  };
-
-  const fetchDataUsers = async () => {
-    const response = await getUsers();
-    setUsers(response.data);
-  };
   useEffect(() => {
-    fetchDataTodosCompleted();
+    const fetchDataTodos = async () => {
+      setLoading(true);
+      const responseTodoCompleted = await getTodosCompleted(pageCompleted);
+      setDataTodos({
+        ...dataTodos,
+        todosCompleted: responseTodoCompleted.data,
+      });
+
+      const responseTodos = await getTodos(pageTodos);
+      setDataTodos({ ...dataTodos, todos: responseTodos.data });
+      setLoading(false);
+    };
+    
+
+    const fetchDataUsers = async () => {
+      const response = await getUsers();
+      setUsers(response.data);
+    };
+
     fetchDataTodos();
     fetchDataUsers();
   }, []);
@@ -52,10 +51,10 @@ function App() {
     setShowModal(true);
 
     if (completed === false) {
-      setEdit(todos.find((todo) => todo.id === id));
+      setEdit(dataTodos.todos.find((todo) => todo.id === id));
     }
     if (completed === true) {
-      setEdit(todosCompleted.find((todo) => todo.id === id));
+      setEdit(dataTodos.todosCompleted.find((todo) => todo.id === id));
     }
   };
 
@@ -63,22 +62,25 @@ function App() {
     const res = await editTodo(id, data);
 
     if (data.completed === false) {
-      const newTodos = todos.map((todo) => {
+      const newTodos = dataTodos.todos.map((todo) => {
         if (todo.id === res.data.id) {
           return res.data;
         }
         return todo;
       });
-      setTodos(newTodos);
+      setDataTodos({ ...dataTodos, todos: newTodos });
+      // setTodos(newTodos);
     }
     if (data.completed === true) {
-      const newTodosCompleted = todosCompleted.map((todo) => {
+      const newTodosCompleted = dataTodos.todosCompleted.map((todo) => {
         if (todo.id === res.data.id) {
           return res.data;
         }
         return todo;
       });
-      setTodosCompleted(newTodosCompleted);
+      setDataTodos({ ...dataTodos, todosCompleted: newTodosCompleted });
+
+      // setTodosCompleted(newTodosCompleted);
     }
   };
 
@@ -106,8 +108,9 @@ function App() {
           setPageTodos(pageTodos + 1);
           if (pageTodos < 10) {
             const response = await getTodos(pageTodos + 1);
-            const newTodos = [...todos, ...response.data];
-            setTodos(newTodos);
+            const newTodos = [...dataTodos.todos, ...response.data];
+            // setTodos(newTodos);
+            setDataTodos({ ...dataTodos, todos: newTodos });
           } else {
             alert("No more data");
           }
@@ -122,8 +125,12 @@ function App() {
           setPageCompleted(pageCompleted + 1);
           if (pageCompleted < 10) {
             const response = await getTodosCompleted(pageCompleted + 1);
-            const newTodosCompleted = [...todosCompleted, ...response.data];
-            setTodosCompleted(newTodosCompleted);
+            const newTodosCompleted = [
+              ...dataTodos.todosCompleted,
+              ...response.data,
+            ];
+            // setTodosCompleted(newTodosCompleted);
+            setDataTodos({ ...dataTodos, todosCompleted: newTodosCompleted });
           } else {
             alert("No more data");
           }
@@ -150,14 +157,16 @@ function App() {
         // onMouseMove={handleMouseMove}
       >
         <ListTodosCard
-          todos={todos}
-          todosCompleted={todosCompleted}
+          // todos={todos}
+          // todosCompleted={todosCompleted}
           handleCardClick={handleCardClick}
           handleScroll={handleScroll}
           todosRef={todosRef}
           todoCompletedRef={todoCompletedRef}
-          setTodos={setTodos}
-          setTodosCompleted={setTodosCompleted}
+          // setTodos={setTodos}
+          // setTodosCompleted={setTodosCompleted}
+          dataTodos={dataTodos}
+          setDataTodos={setDataTodos}
         />
       </div>
       <FormSelect
