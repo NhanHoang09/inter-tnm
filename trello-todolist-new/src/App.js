@@ -1,12 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-
-import {
-  getAllTodos,
-  getTodosCompleted,
-  getTodos,
-  getUsers,
-  editTodo,
-} from "./api";
+import { getTodosCompleted, getTodos, getUsers, editTodo } from "./api";
 import FormSelect from "./components/FormSelect";
 import FormModal from "./components/FormModal";
 import Loading from "./components/Loading";
@@ -28,15 +21,34 @@ function App() {
   const todosRef = useRef();
   const todoCompletedRef = useRef();
 
+  const columnsFromBackend = {
+    1: {
+      name: "Todos",
+      items: todos,
+      ref: todosRef,
+    },
+    2: {
+      name: "Completed",
+      items: todosCompleted,
+      ref: todoCompletedRef,
+    },
+  };
+
+  const [columns, setColumns] = useState({});
+
+  useEffect(() => {
+    setColumns(columnsFromBackend);
+  }, [todos, todosCompleted]);
+
   const fetchDataTodosCompleted = async () => {
     setLoading(true);
-    const response = await getTodosCompleted(pageCompleted);
+    const response = await getTodosCompleted();
     setTodosCompleted(response.data);
     setLoading(false);
   };
 
   const fetchDataTodos = async () => {
-    const response = await getTodos(pageTodos);
+    const response = await getTodos();
     setTodos(response.data);
   };
 
@@ -105,9 +117,9 @@ function App() {
       const { scrollTop, scrollHeight, clientHeight } = todosRef.current;
       if (scrollTop + clientHeight === scrollHeight) {
         if (nameColumn === "Todos") {
+          setPageTodos(pageTodos + 1);
           if (pageTodos < 10) {
-            setPageTodos(pageTodos + 1);
-            const response = await getTodos(pageTodos);
+            const response = await getTodos(pageTodos + 1);
             const newTodos = [...todos, ...response.data];
             setTodos(newTodos);
           }
@@ -119,9 +131,9 @@ function App() {
         todoCompletedRef.current;
       if (scrollTop + clientHeight === scrollHeight) {
         if (nameColumn === "Completed") {
+          setPageCompleted(pageCompleted + 1);
           if (pageCompleted < 10) {
-            setPageCompleted(pageCompleted + 1);
-            const response = await getTodos(pageCompleted);
+            const response = await getTodos(pageCompleted + 1);
             const newTodosCompleted = [...todosCompleted, ...response.data];
             setTodosCompleted(newTodosCompleted);
           }
@@ -150,10 +162,14 @@ function App() {
         <ListTodosCard
           todos={todos}
           todosCompleted={todosCompleted}
+          setTodos={setTodos}
+          setTodosCompleted={setTodosCompleted}
           handleCardClick={handleCardClick}
           handleScroll={handleScroll}
           todosRef={todosRef}
           todoCompletedRef={todoCompletedRef}
+          columns={columns}
+          setColumns={setColumns}
         />
       </div>
       <FormSelect

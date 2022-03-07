@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from "react";
+import React from "react";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import TodoCard from "../components/TodoCard";
 
@@ -10,25 +10,11 @@ function ListTodosCard({
   handleScroll,
   todosRef,
   todoCompletedRef,
+  columns,
+  setColumns,
+  setTodos,
+  setTodosCompleted,
 }) {
-  const columnsFromBackend = {
-    1: {
-      name: "Todos",
-      items: todos,
-      ref: todosRef,
-    },
-    2: {
-      name: "Completed",
-      items: todosCompleted,
-      ref: todoCompletedRef,
-    },
-  };
-
-  const [columns, setColumns] = useState(columnsFromBackend);
-  useEffect(() => {
-    setColumns(columnsFromBackend);
-  }, [todos, todosCompleted]);
-
   const onDragEnd = (result, columns, setColumns) => {
     if (!result.destination) return;
     const { source, destination } = result;
@@ -44,17 +30,18 @@ function ListTodosCard({
 
       const newItem = [{ ...removed, completed: !removed.completed }];
 
-      setColumns({
-        ...columns,
-        [source.droppableId]: {
-          ...sourceColumn,
-          items: sourceItems,
-        },
-        [destination.droppableId]: {
-          ...destColumn,
-          items: destItems,
-        },
-      });
+      destItems.splice(destination.index, 0, ...newItem);
+
+      if (sourceColumn.name === "Todos") {
+        setTodos(sourceItems);
+        setTodosCompleted(destItems);
+    
+      }
+      if (sourceColumn.name === "Completed") {
+        setTodos(destItems);
+        setTodosCompleted(sourceItems);
+      
+      }
     } else {
       const column = columns[source.droppableId];
       const copiedItems = [...column.items];
@@ -69,7 +56,6 @@ function ListTodosCard({
       });
     }
   };
-
   return (
     <DragDropContext
       onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
@@ -82,10 +68,10 @@ function ListTodosCard({
               flexDirection: "column",
               alignItems: "center",
             }}
-            key={index}
+            key={columnId}
           >
             <div style={{ margin: 8 }}>
-              <Droppable droppableId={columnId} key={index}>
+              <Droppable droppableId={columnId} key={columnId}>
                 {(provided, snapshot) => {
                   return (
                     <div
@@ -96,12 +82,13 @@ function ListTodosCard({
                           ? "lightblue"
                           : "lightgrey",
                         padding: 12,
-                        width: 300,
+                        width: 280,
                         height: "auto",
                         borderRadius: 5,
                         backgroundColor: "#ebecf0",
                         textColor: "#172b4d",
                         boxShadow: "rgb(0 0 0 / 10%) 0px 0px 5px",
+                        fontSize: "14px"
                       }}
                     >
                       <p style={{ marginBottom: 0, fontWeight: "bold" }}>
@@ -117,16 +104,14 @@ function ListTodosCard({
                       >
                         {column.items.map((item, index) => {
                           return (
-                            <Suspense fallback={<p>Loading...</p>} key={index}>
-                              <TodoCard
-                                item={item}
-                                index={index}
-                                provided={provided}
-                                snapshot={snapshot}
-                                handleCardClick={handleCardClick}
-                                handleRemoveCard={handleRemoveCard}
-                              />
-                            </Suspense>
+                            <TodoCard
+                              item={item}
+                              index={index}
+                              provided={provided}
+                              snapshot={snapshot}
+                              handleCardClick={handleCardClick}
+                              handleRemoveCard={handleRemoveCard}
+                            />
                           );
                         })}
                       </div>
