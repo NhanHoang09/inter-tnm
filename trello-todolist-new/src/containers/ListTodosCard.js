@@ -4,9 +4,7 @@ import TodoCard from "../components/TodoCard";
 
 function ListTodosCard({
   todos,
-  setTodos,
   todosCompleted,
-  setTodosCompleted,
   handleCardClick,
   handleRemoveCard,
   handleScroll,
@@ -46,16 +44,17 @@ function ListTodosCard({
 
       const newItem = [{ ...removed, completed: !removed.completed }];
 
-      destItems.splice(destination.index, 0, newItem);
-
-      if (sourceColumn.name === "Todos") {
-        setTodos(sourceItems);
-        setTodosCompleted(destItems);
-      }
-      if (sourceColumn.name === "Completed") {
-        setTodos(destItems);
-        setTodosCompleted(sourceItems);
-      }
+      setColumns({
+        ...columns,
+        [source.droppableId]: {
+          ...sourceColumn,
+          items: sourceItems,
+        },
+        [destination.droppableId]: {
+          ...destColumn,
+          items: destItems,
+        },
+      });
     } else {
       const column = columns[source.droppableId];
       const copiedItems = [...column.items];
@@ -97,7 +96,7 @@ function ListTodosCard({
                           ? "lightblue"
                           : "lightgrey",
                         padding: 12,
-                        width: 280,
+                        width: 300,
                         height: "auto",
                         borderRadius: 5,
                         backgroundColor: "#ebecf0",

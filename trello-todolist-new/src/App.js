@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import { getTodosCompleted, getTodos, getUsers, editTodo } from "./api";
+
+import {
+  getAllTodos,
+  getTodosCompleted,
+  getTodos,
+  getUsers,
+  editTodo,
+} from "./api";
 import FormSelect from "./components/FormSelect";
 import FormModal from "./components/FormModal";
 import Loading from "./components/Loading";
@@ -98,13 +105,11 @@ function App() {
       const { scrollTop, scrollHeight, clientHeight } = todosRef.current;
       if (scrollTop + clientHeight === scrollHeight) {
         if (nameColumn === "Todos") {
-          setPageTodos(pageTodos + 1);
           if (pageTodos < 10) {
-            const response = await getTodos(pageTodos + 1);
+            setPageTodos(pageTodos + 1);
+            const response = await getTodos(pageTodos);
             const newTodos = [...todos, ...response.data];
             setTodos(newTodos);
-          } else {
-            alert("No more data");
           }
         }
       }
@@ -114,13 +119,11 @@ function App() {
         todoCompletedRef.current;
       if (scrollTop + clientHeight === scrollHeight) {
         if (nameColumn === "Completed") {
-          setPageCompleted(pageCompleted + 1);
           if (pageCompleted < 10) {
-            const response = await getTodosCompleted(pageCompleted + 1);
+            setPageCompleted(pageCompleted + 1);
+            const response = await getTodos(pageCompleted);
             const newTodosCompleted = [...todosCompleted, ...response.data];
             setTodosCompleted(newTodosCompleted);
-          } else {
-            alert("No more data");
           }
         }
       }
@@ -151,8 +154,6 @@ function App() {
           handleScroll={handleScroll}
           todosRef={todosRef}
           todoCompletedRef={todoCompletedRef}
-          setTodos={setTodos}
-          setTodosCompleted={setTodosCompleted}
         />
       </div>
       <FormSelect
