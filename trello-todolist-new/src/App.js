@@ -8,10 +8,8 @@ import InitBg from "./assets/InitBg.jpg";
 import "./App.css";
 
 function App() {
-  const [dataTodos, setDataTodos] = useState({
-    todos: [],
-    todosCompleted: [],
-  });
+  const [todos, setTodos] = useState([]);
+  const [todosCompleted, setTodosCompleted] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pageTodos, setPageTodos] = useState(1);
   const [pageCompleted, setPageCompleted] = useState(1);
@@ -23,23 +21,24 @@ function App() {
   const todosRef = useRef();
   const todoCompletedRef = useRef();
 
+  const fetchDataTodosCompleted = async () => {
+    setLoading(true);
+    const response = await getTodosCompleted(pageCompleted);
+    setTodosCompleted(response.data);
+    setLoading(false);
+  };
+
+  const fetchDataTodos = async () => {
+    const response = await getTodos(pageTodos);
+    setTodos(response.data);
+  };
+
+  const fetchDataUsers = async () => {
+    const response = await getUsers();
+    setUsers(response.data);
+  };
   useEffect(() => {
-    const fetchDataTodos = async () => {
-      setLoading(true);
-      const responseTodoCompleted = await getTodosCompleted(pageCompleted);
-      const responseTodos = await getTodos(pageTodos);
-      setLoading(false);
-      setDataTodos({
-        todos: responseTodos.data,
-        todosCompleted: responseTodoCompleted.data,
-      });
-    };
-
-    const fetchDataUsers = async () => {
-      const response = await getUsers();
-      setUsers(response.data);
-    };
-
+    fetchDataTodosCompleted();
     fetchDataTodos();
     fetchDataUsers();
   }, []);
@@ -48,10 +47,10 @@ function App() {
     setShowModal(true);
 
     if (completed === false) {
-      setEdit(dataTodos.todos.find((todo) => todo.id === id));
+      setEdit(todos.find((todo) => todo.id === id));
     }
     if (completed === true) {
-      setEdit(dataTodos.todosCompleted.find((todo) => todo.id === id));
+      setEdit(todosCompleted.find((todo) => todo.id === id));
     }
   };
 
@@ -59,25 +58,22 @@ function App() {
     const res = await editTodo(id, data);
 
     if (data.completed === false) {
-      const newTodos = dataTodos.todos.map((todo) => {
+      const newTodos = todos.map((todo) => {
         if (todo.id === res.data.id) {
           return res.data;
         }
         return todo;
       });
-      setDataTodos({ ...dataTodos, todos: newTodos });
-      // setTodos(newTodos);
+      setTodos(newTodos);
     }
     if (data.completed === true) {
-      const newTodosCompleted = dataTodos.todosCompleted.map((todo) => {
+      const newTodosCompleted = todosCompleted.map((todo) => {
         if (todo.id === res.data.id) {
           return res.data;
         }
         return todo;
       });
-      setDataTodos({ ...dataTodos, todosCompleted: newTodosCompleted });
-
-      // setTodosCompleted(newTodosCompleted);
+      setTodosCompleted(newTodosCompleted);
     }
   };
 
@@ -105,9 +101,8 @@ function App() {
           setPageTodos(pageTodos + 1);
           if (pageTodos < 10) {
             const response = await getTodos(pageTodos + 1);
-            const newTodos = [...dataTodos.todos, ...response.data];
-            // setTodos(newTodos);
-            setDataTodos({ ...dataTodos, todos: newTodos });
+            const newTodos = [...todos, ...response.data];
+            setTodos(newTodos);
           } else {
             alert("No more data");
           }
@@ -122,12 +117,8 @@ function App() {
           setPageCompleted(pageCompleted + 1);
           if (pageCompleted < 10) {
             const response = await getTodosCompleted(pageCompleted + 1);
-            const newTodosCompleted = [
-              ...dataTodos.todosCompleted,
-              ...response.data,
-            ];
-            // setTodosCompleted(newTodosCompleted);
-            setDataTodos({ ...dataTodos, todosCompleted: newTodosCompleted });
+            const newTodosCompleted = [...todosCompleted, ...response.data];
+            setTodosCompleted(newTodosCompleted);
           } else {
             alert("No more data");
           }
@@ -154,16 +145,14 @@ function App() {
         // onMouseMove={handleMouseMove}
       >
         <ListTodosCard
-          // todos={todos}
-          // todosCompleted={todosCompleted}
+          todos={todos}
+          todosCompleted={todosCompleted}
           handleCardClick={handleCardClick}
           handleScroll={handleScroll}
           todosRef={todosRef}
           todoCompletedRef={todoCompletedRef}
-          // setTodos={setTodos}
-          // setTodosCompleted={setTodosCompleted}
-          dataTodos={dataTodos}
-          setDataTodos={setDataTodos}
+          setTodos={setTodos}
+          setTodosCompleted={setTodosCompleted}
         />
       </div>
       <FormSelect

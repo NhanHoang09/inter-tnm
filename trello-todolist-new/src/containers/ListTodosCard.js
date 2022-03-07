@@ -3,23 +3,25 @@ import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import TodoCard from "../components/TodoCard";
 
 function ListTodosCard({
+  todos,
+  setTodos,
+  todosCompleted,
+  setTodosCompleted,
   handleCardClick,
+  handleRemoveCard,
   handleScroll,
   todosRef,
   todoCompletedRef,
-  dataTodos,
-  setDataTodos,
 }) {
-
   const columnsFromBackend = {
     1: {
       name: "Todos",
-      items: dataTodos.todos,
+      items: todos,
       ref: todosRef,
     },
     2: {
       name: "Completed",
-      items: dataTodos.todosCompleted,
+      items: todosCompleted,
       ref: todoCompletedRef,
     },
   };
@@ -27,7 +29,7 @@ function ListTodosCard({
   const [columns, setColumns] = useState(columnsFromBackend);
   useEffect(() => {
     setColumns(columnsFromBackend);
-  }, [dataTodos]);
+  }, [todos, todosCompleted]);
 
   const onDragEnd = (result, columns, setColumns) => {
     if (!result.destination) return;
@@ -42,27 +44,30 @@ function ListTodosCard({
 
       const [removed] = sourceItems.splice(source.index, 1);
 
-      const [newItem] = [{ ...removed, completed: !removed.completed }];
+      const newItem = [{ ...removed, completed: !removed.completed }];
 
       destItems.splice(destination.index, 0, newItem);
 
       if (sourceColumn.name === "Todos") {
-        // setTodos(sourceItems);
-        // setTodosCompleted(destItems);
-        setDataTodos({
-          todos: sourceItems,
-          todosCompleted: destItems,
-        });
+        setTodos(sourceItems);
+        setTodosCompleted(destItems);
       }
-
       if (sourceColumn.name === "Completed") {
-        // setTodos(destItems);
-        // setTodosCompleted(sourceItems);
-        setDataTodos({
-          todos: destItems,
-          todosCompleted: sourceItems,
-        });
+        setTodos(destItems);
+        setTodosCompleted(sourceItems);
       }
+    } else {
+      const column = columns[source.droppableId];
+      const copiedItems = [...column.items];
+      const [removed] = copiedItems.splice(source.index, 1);
+      copiedItems.splice(destination.index, 0, removed);
+      setColumns({
+        ...columns,
+        [source.droppableId]: {
+          ...column,
+          items: copiedItems,
+        },
+      });
     }
   };
 
@@ -120,6 +125,7 @@ function ListTodosCard({
                                 provided={provided}
                                 snapshot={snapshot}
                                 handleCardClick={handleCardClick}
+                                handleRemoveCard={handleRemoveCard}
                               />
                             </Suspense>
                           );
