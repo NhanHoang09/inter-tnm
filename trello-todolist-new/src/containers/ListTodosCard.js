@@ -23,14 +23,16 @@ function ListTodosCard({
       const sourceColumn = columns[source.droppableId];
       const destColumn = columns[destination.droppableId];
 
-      const sourceItems = [...sourceColumn.items];
-      const destItems = [...destColumn.items];
+      const sourceItems = sourceColumn.items.filter(
+        (x, index) => index != source.index
+      );
+      const destItems = destColumn.items;
 
-      const [removed] = sourceItems.splice(source.index, 1);
+      const removed = sourceColumn.items[source.index];
 
-      const newItem = [{ ...removed, completed: !removed.completed }];
+      const newItem = { ...removed, completed: !removed.completed };
 
-      destItems.splice(destination.index, 0, ...newItem);
+      destItems.splice(destination.index, 0, newItem);
 
       if (sourceColumn.name === "Todos") {
         setTodos(sourceItems);
@@ -106,6 +108,7 @@ function ListTodosCard({
                           return (
                             <TodoCard
                               item={item}
+                              key={item.id}
                               index={index}
                               provided={provided}
                               snapshot={snapshot}

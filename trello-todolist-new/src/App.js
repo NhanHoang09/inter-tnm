@@ -118,11 +118,10 @@ function App() {
       if (scrollTop + clientHeight === scrollHeight) {
         if (nameColumn === "Todos") {
           setPageTodos(pageTodos + 1);
-          if (pageTodos < 10) {
-            const response = await getTodos(pageTodos + 1);
-            const newTodos = [...todos, ...response.data];
-            setTodos(newTodos);
-          }
+
+          const response = await getTodos(pageTodos + 1);
+          const newTodos = [...todos, ...response.data];
+          setTodos(newTodos);
         }
       }
     }
@@ -132,11 +131,10 @@ function App() {
       if (scrollTop + clientHeight === scrollHeight) {
         if (nameColumn === "Completed") {
           setPageCompleted(pageCompleted + 1);
-          if (pageCompleted < 10) {
-            const response = await getTodos(pageCompleted + 1);
-            const newTodosCompleted = [...todosCompleted, ...response.data];
-            setTodosCompleted(newTodosCompleted);
-          }
+
+          const response = await getTodos(pageCompleted + 1);
+          const newTodosCompleted = [...todosCompleted, ...response.data];
+          setTodosCompleted(newTodosCompleted);
         }
       }
     }
