@@ -16,3 +16,9 @@
 		- utils/helpers: định nghĩa mấy function thường được dùng chung như mấy hàm convert, tính toán gì đó, hoặc mấy constants...
 		- assets: chứa mấy fonts, icon, images,...
 		- services/api: mấy tác vụ liên quan đến server thường là call api
+
+5. khi map dữ liệu không nê nsuwr dụng index mà sử dụng id, vì sử dụng nếu key là index thì khi ta thay đổi vị trí của các phần tử trong mảng (xóa, thêm...), index cũng sẽ thay đổi và lại xảy ra vấn đề như ví dụ Devnotes ở mục phía trên.
+
+6.button trong form đó có type submit nên phải thêm preventDefault để khỏi submit form
+ - input có type = submit tương tự button type submit
+ - button không định nghĩa type nằm trong form mặc định là submit của form 
