@@ -7,8 +7,8 @@ interface IItem {
 
 
 interface IElement {
-  column1: IItem[],
-  column2: IItem[],
-  column3: IItem[], 
+  done: IItem[],
+  inProgress: IItem[],
+  todo: IItem[], 
 }
 

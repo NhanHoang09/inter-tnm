@@ -1,8 +1,7 @@
-import React,{useState,useEffect} from 'react'
-import styled from 'styled-components';
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
-import DraggableElement from './DraggableElement'
-
+import DraggableElement from "./DraggableElement";
 
 const DragDropContextContainer = styled.div`
   padding: 20px;
@@ -16,91 +15,93 @@ const ListGrid = styled.div`
   grid-gap: 8px;
 `;
 
-
-
-const getItems = (count: number, prefix: string):IItem[] =>
+const getItems = (count: number, prefix: string): IItem[] =>
   Array.from({ length: count }, (v, k) => k).map((k) => {
     const randomId = Math.floor(Math.random() * 1000);
     return {
       id: `item-${randomId}`,
       prefix,
-      content: `item ${randomId}`
+      content: `item ${randomId}`,
     };
   });
 
-  const removeFromList = (list: string, index: number) => {
-    const result = Array.from(list);
-    const [removed] = result.splice(index, 1);
-    return [removed, result];
-  };
-  
-  const addToList = (list : string, index : number, element: string) => {
-    const result = Array.from(list);
-    result.splice(index, 0, element);
-    return result;
-  };
+const removeFromList = (list: IItem[], index: number) => {
+  const result = Array.from(list);
+  const [removed] = result.splice(index, 1);
+  return removed;
+};
 
+const addToList = (list: IItem[], index: number, element: IItem) => {
+  const result = Array.from(list);
+  result.splice(index, 0, element);
+  return result;
+};
 
 const lists: string[] = ["todo", "inProgress", "done"];
 
-const generateLists = () =>
-  lists.reduce(
-    (acc, listKey) => ({ ...acc, [listKey]: getItems(10, listKey) }),
-    {}
-  );
+// const generateLists: IElement = () =>
+//   lists.reduce(
+//     (acc, listKey) => ({ ...acc, [listKey]: getItems(10, listKey) }),
+//     {}
+//   );
 
-
-
+const initialTodos: IElement = {
+  done: getItems(10, "done"),
+  inProgress: getItems(10, "inProgress"),
+  todo: getItems(10, "todo"),
+};
 
 export default function DragList() {
-
-  const [elements, setElements] = useState<{}>(generateLists());
+  const [elements, setElements] = useState(initialTodos);
 
   useEffect(() => {
-    setElements(generateLists());
+    setElements(initialTodos);
   }, []);
 
-  const onDragEnd = (result: DropResult):void => {
+  const onDragEnd = (result: DropResult): void => {
+    const { source, destination } = result;
 
-
-    if (!result.destination) {
+    if (!destination) {
       return;
     }
-    // const listCopy = { ...elements };
 
-    // const sourceList = listCopy[result.source.droppableId];
+    const listCopy: IElement = { ...elements };
 
-    // const [removedElement, newSourceList] = removeFromList(
-    //   sourceList,
-    //   result.source.index
-    // );
+    const sourceList: IItem[] = listCopy[source.droppableId as keyof IElement];
 
-    // listCopy[result.source.droppableId] = newSourceList;
+    const removedElement = removeFromList(sourceList, source.index);
 
-    // const destinationList = listCopy[result.destination.droppableId];
+    const newSourceList: IItem[] = sourceList.filter(
+      (list) => list !== removedElement
+    );
 
-    // listCopy[result.destination.droppableId] = addToList(
-    //   destinationList,
-    //   result.destination.index,
-    //   removedElement
-    // );
+    listCopy[source.droppableId as keyof IElement] = newSourceList;
 
-    // setElements(listCopy);
+    const destinationList: IItem[] =
+      listCopy[destination.droppableId as keyof IElement];
+
+    listCopy[destination.droppableId as keyof IElement] = addToList(
+      destinationList,
+      destination.index,
+      removedElement
+    );
+
+    setElements(listCopy);
   };
 
   return (
     <DragDropContextContainer>
-    <DragDropContext onDragEnd={onDragEnd}>
-      <ListGrid>
-        {lists.map((listKey) => (
-          <DraggableElement
-            elements={elements[listKey]}
-            key={listKey}
-            prefix={listKey}
-          />
-        ))}
-      </ListGrid>
-    </DragDropContext>
-  </DragDropContextContainer>
-  )
+      <DragDropContext onDragEnd={onDragEnd}>
+        <ListGrid>
+          {lists.map((listKey) => (
+            <DraggableElement
+              elements={elements[listKey as keyof IElement]}
+              key={listKey}
+              prefix={listKey}
+            />
+          ))}
+        </ListGrid>
+      </DragDropContext>
+    </DragDropContextContainer>
+  );
 }
