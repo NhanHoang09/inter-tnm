@@ -1,14 +1,11 @@
-
 interface IItem {
-  id: string,
-  prefix: string,
-  content: string
+  id: string;
+  prefix: string;
+  content: string;
 }
-
 
 interface IElement {
-  done: IItem[],
-  inProgress: IItem[],
-  todo: IItem[], 
+  [done: string]: IItem[];
+  [inProgress : string]: IItem[];
+  [todo : string]: IItem[];
 }
-

@@ -1,9 +1,9 @@
-// in ToDoItem.tsx
-import * as React from "react";
-import { TodoItemInterface } from "../interface";
+import React from 'react'
 
+function TodoItem() {
+  return (
+    <div>TodoItem</div>
+  )
+}
 
-const ToDoItem = (props: TodoItemInterface) => {
-  return <div>TodoItem</div>;
-};
-export default ToDoItem;
+export default TodoItem

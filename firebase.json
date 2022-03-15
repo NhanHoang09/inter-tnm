@@ -1,6 +1,18 @@
 {
   "hosting": [
     {
+      "target": "trellotodolistwithts",
+      "public": "trello-todolist-typescript/build",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "index.html"
+        }
+      ]
+    },
+    {
       "target": "trellotodolistnew",
       "public": "trello-todolist-new/build",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],

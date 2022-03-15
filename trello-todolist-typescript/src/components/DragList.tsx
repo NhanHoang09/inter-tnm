@@ -16,7 +16,7 @@ const ListGrid = styled.div`
 `;
 
 const getItems = (count: number, prefix: string): IItem[] =>
-  Array.from({ length: count }, (v, k) => k).map((k) => {
+  Array.from({ length: count }, ( k) => k).map((k) => {
     const randomId = Math.floor(Math.random() * 1000);
     return {
       id: `item-${randomId}`,
@@ -38,12 +38,6 @@ const addToList = (list: IItem[], index: number, element: IItem) => {
 };
 
 const lists: string[] = ["todo", "inProgress", "done"];
-
-// const generateLists: IElement = () =>
-//   lists.reduce(
-//     (acc, listKey) => ({ ...acc, [listKey]: getItems(10, listKey) }),
-//     {}
-//   );
 
 const initialTodos: IElement = {
   done: getItems(10, "done"),
@@ -67,7 +61,7 @@ export default function DragList() {
 
     const listCopy: IElement = { ...elements };
 
-    const sourceList: IItem[] = listCopy[source.droppableId as keyof IElement];
+    const sourceList: IItem[] = listCopy[source.droppableId];
 
     const removedElement = removeFromList(sourceList, source.index);
 
@@ -75,12 +69,11 @@ export default function DragList() {
       (list) => list !== removedElement
     );
 
-    listCopy[source.droppableId as keyof IElement] = newSourceList;
+    listCopy[source.droppableId] = newSourceList;
 
-    const destinationList: IItem[] =
-      listCopy[destination.droppableId as keyof IElement];
+    const destinationList: IItem[] = listCopy[destination.droppableId];
 
-    listCopy[destination.droppableId as keyof IElement] = addToList(
+    listCopy[destination.droppableId] = addToList(
       destinationList,
       destination.index,
       removedElement
@@ -88,6 +81,7 @@ export default function DragList() {
 
     setElements(listCopy);
   };
+  
 
   return (
     <DragDropContextContainer>
@@ -95,7 +89,7 @@ export default function DragList() {
         <ListGrid>
           {lists.map((listKey) => (
             <DraggableElement
-              elements={elements[listKey as keyof IElement]}
+              elements={elements[listKey]}
               key={listKey}
               prefix={listKey}
             />
