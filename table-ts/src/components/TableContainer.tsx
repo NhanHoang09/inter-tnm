@@ -1,20 +1,33 @@
 import { DeleteOutlined } from "@ant-design/icons";
 import { Button, Col, DatePicker, Input, Row, Select, Table, Tag } from "antd";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import fetchData from "../api/index";
-import React from "react";
 
 const { Option } = Select;
 
 function TableContainer() {
-  const [data, setData] = React.useState<IDataType[]>([]);
+  const [data, setData] = useState<IDataType[]>([]);
+  const [filterData, setFilterData] = useState<IDataType[]>([]);
+  
+
+
+
+  const dateFormat = "MM/DD/YYYY";
+
+  const styleTitleTable: object = {
+    display: "flex",
+    flexDirection: "column",
+    textAlign: "center",
+    width: "150px",
+  };
 
   const columns = [
     {
       title: () => {
         return (
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={styleTitleTable}>
             Quote ID
-            <Input />
+            <Input onChange={handleChangeQuoteId} />
           </div>
         );
       },
@@ -23,9 +36,9 @@ function TableContainer() {
     {
       title: () => {
         return (
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={styleTitleTable}>
             Care Recipient Name
-            <Input />
+            <Input onChange={handleChangeName} />
           </div>
         );
       },
@@ -35,9 +48,9 @@ function TableContainer() {
     {
       title: () => {
         return (
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={styleTitleTable}>
             Care Recipient DOB
-            <DatePicker />
+            <DatePicker onChange={handleChangeBirthDay} format={dateFormat} />
           </div>
         );
       },
@@ -50,11 +63,11 @@ function TableContainer() {
     {
       title: () => {
         return (
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={styleTitleTable}>
             Short Term
-            <Select onChange={handleChangeInput}>
-              <Option value="yes">YES</Option>
-              <Option value="no">NO</Option>
+            <Select onChange={handleChangeShortTerm}>
+              <Option value="true">YES</Option>
+              <Option value="false">NO</Option>
             </Select>
           </div>
         );
@@ -72,11 +85,11 @@ function TableContainer() {
     {
       title: () => {
         return (
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={styleTitleTable}>
             Contagion
-            <Select>
-              <Option value="yes">YES</Option>
-              <Option value="no">NO</Option>
+            <Select onChange={handleChangeContagion}>
+              <Option value="true">YES</Option>
+              <Option value="false">NO</Option>
             </Select>
           </div>
         );
@@ -93,11 +106,11 @@ function TableContainer() {
     {
       title: () => {
         return (
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={styleTitleTable}>
             Emergency
-            <Select>
-              <Option value="yes">YES</Option>
-              <Option value="no">NO</Option>
+            <Select onChange={handleChangeEmergency}>
+              <Option value="true">YES</Option>
+              <Option value="false">NO</Option>
             </Select>
           </div>
         );
@@ -114,11 +127,11 @@ function TableContainer() {
     {
       title: () => {
         return (
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={styleTitleTable}>
             Mileage Surcharge
-            <Select>
-              <Option value="yes">YES</Option>
-              <Option value="no">NO</Option>
+            <Select onChange={handleChangeMileageSurcharge}>
+              <Option value="true">YES</Option>
+              <Option value="false">NO</Option>
             </Select>
           </div>
         );
@@ -135,11 +148,11 @@ function TableContainer() {
     {
       title: () => {
         return (
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={styleTitleTable}>
             Primary Quote
-            <Select>
-              <Option value={true}>YES</Option>
-              <Option value={false}>NO</Option>
+            <Select onChange={handleChangePrimaryQuote}>
+              <Option value="true">YES</Option>
+              <Option value="false">NO</Option>
             </Select>
           </div>
         );
@@ -156,9 +169,9 @@ function TableContainer() {
     {
       title: () => {
         return (
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={styleTitleTable}>
             Start Date
-            <DatePicker />
+            <DatePicker onChange={handleChangeStartDate} format={dateFormat} />
           </div>
         );
       },
@@ -195,9 +208,9 @@ function TableContainer() {
     {
       title: () => {
         return (
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={styleTitleTable}>
             Status
-            <Select showSearch placeholder="Select a status">
+            <Select onChange={handleChangeStatus} placeholder="Select a status">
               <Option value="new">new</Option>
               <Option value="approved">approved</Option>
               <Option value="rejected">rejected</Option>
@@ -224,19 +237,132 @@ function TableContainer() {
     },
   };
 
-  const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement> ) => {
-    console.log(e.target.value);
+  const handleChangeShortTerm = (value: string) => {
+    if (value === "true") {
+      const newData = data.filter((item) => item.short_term === true);
+      setFilterData(newData);
+    }
+    if (value === "false") {
+      const newData = data.filter((item) => item.short_term === false);
+      setFilterData(newData);
+    }
+  };
+  const handleChangeContagion = (value: string) => {
+    if (value === "true") {
+      const newData = data.filter((item) => item.contagion === true);
+      setFilterData(newData);
+    }
+    if (value === "false") {
+      const newData = data.filter((item) => item.contagion === false);
+      setFilterData(newData);
+    }
+  };
+  const handleChangeEmergency = (value: string) => {
+    if (value === "true") {
+      const newData = data.filter((item) => item.emergency === true);
+      setFilterData(newData);
+    }
+    if (value === "false") {
+      const newData = data.filter((item) => item.emergency === false);
+      setFilterData(newData);
+    }
+  };
+  const handleChangeMileageSurcharge = (value: string) => {
+    if (value === "true") {
+      const newData = data.filter((item) => item.mileage_surcharge === true);
+      setFilterData(newData);
+    }
+    if (value === "false") {
+      const newData = data.filter((item) => item.mileage_surcharge === false);
+      setFilterData(newData);
+    }
+  };
+  const handleChangePrimaryQuote = (value: string) => {
+    if (value === "true") {
+      const newData = data.filter((item) => item.primary_quote === true);
+      setFilterData(newData);
+    }
+    if (value === "false") {
+      const newData = data.filter((item) => item.primary_quote === false);
+      setFilterData(newData);
+    }
+  };
 
-      const newData: IDataType[] = data.filter(item => item.short_term === true)
-      setData(newData);
-    
+  const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
+    const newData = data.filter((item: IDataType) => {
+      return e.target.value
+        ? item.name.toLowerCase().includes(e.target.value.toLowerCase())
+        : item;
+    });
+    setFilterData(newData);
+  };
 
-  }
+  const handleChangeQuoteId = (e: ChangeEvent<HTMLInputElement>) => {
+    const newData = data.filter((item: IDataType) => {
+      return e.target.value
+        ? item.quote_id.toLowerCase().includes(e.target.value.toLowerCase())
+        : item;
+    });
+    setFilterData(newData);
+  };
 
-  React.useEffect(() => {
+  const handleChangeBirthDay = (
+    dataDate: moment.Moment | null,
+    dateString: string
+  ) => {
+    const date = new Date(dateString).getTime();
+
+    const newData = data.filter((item: IDataType) => {
+      const DataDate = new Date(item.birthday).getTime();
+      return dateString ? DataDate === date : item;
+    });
+    setFilterData(newData);
+  };
+
+  const handleChangeStartDate = (
+    dataDate: moment.Moment | null,
+    dateString: string
+  ) => {
+    const date = new Date(dateString).getTime();
+
+    const newData = data.filter((item: IDataType) => {
+      const DataDate = new Date(item.start_date).getTime();
+      return dateString ? DataDate === date : item;
+    });
+    setFilterData(newData);
+  };
+
+  const handleChangeStatus = (value: string) => {
+    if (value === "new") {
+      const newData = data.filter((item) => item.status === "new");
+      setFilterData(newData);
+    }
+    if (value === "approved") {
+      const newData = data.filter((item) => item.status === "approved");
+      setFilterData(newData);
+    }
+    if (value === "rejected") {
+      const newData = data.filter((item) => item.status === "rejected");
+      setFilterData(newData);
+    }
+    if (value === "closed") {
+      const newData = data.filter((item) => item.status === "closed");
+      setFilterData(newData);
+    }
+  };
+
+  const handleRemove = (id: any) => {
+    const newData = data.filter((dataItem: IDataType) => {
+      return dataItem.key !== id.id;
+    });
+    setData(newData);
+  };
+
+  useEffect(() => {
     const fetchDataTable = async () => {
       const response = await fetchData();
       setData(response.data);
+      setFilterData(response.data);
     };
     fetchDataTable();
   }, []);
@@ -247,6 +373,7 @@ function TableContainer() {
         <Col span="6">
           <div className="input-container">
             <Select placeholder="Change status" className="select-input">
+              <Option value="Option"> </Option>
               <Option value="Option1">new</Option>
               <Option value="Option2">approved</Option>
               <Option value="Option3">rejected</Option>
@@ -255,9 +382,7 @@ function TableContainer() {
           </div>
         </Col>
         <Col span="6">
-          <Button size="large" className="btn btn-default">
-            Apply
-          </Button>
+          <Button className="btn btn-default">Apply</Button>
         </Col>
       </Row>
 
@@ -267,7 +392,7 @@ function TableContainer() {
           ...rowSelection,
         }}
         columns={columns}
-        dataSource={data}
+        dataSource={filterData}
         size="small"
         pagination={{ pageSize: 10 }}
       />
