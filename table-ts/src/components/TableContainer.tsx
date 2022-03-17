@@ -34,7 +34,7 @@ function TableContainer() {
         return (
           <div style={styleTitleTable}>
             Quote ID
-            <Input onChange={handleChangeQuoteId} />
+            <Input onChange={debounce(handleChangeQuoteId)} />
           </div>
         );
       },
@@ -46,7 +46,7 @@ function TableContainer() {
         return (
           <div style={styleTitleTable}>
             Care Recipient Name
-            <Input onChange={handleChangeName} />
+            <Input onChange={debounce(handleChangeName)} />
           </div>
         );
       },
@@ -231,7 +231,7 @@ function TableContainer() {
     },
     {
       title: "Delete",
-      render: () => <DeleteOutlined onClick={handleRemove}/>,
+      render: () => <DeleteOutlined onClick={handleRemove} />,
     },
   ];
 
@@ -242,44 +242,87 @@ function TableContainer() {
         "selectedRows: ",
         selectedRows
       );
-      selectedRows.map(item => setInputStatus(item.status))
+      selectedRows.map((item) => setInputStatus(item.status));
     },
-    selection: (key : string) => {
-      console.log(key);
-      
-    }
+  };
+  const selection = (
+    record: IDataType,
+    selected: any,
+    selectedRows: any,
+    nativeEvent: any
+  ) => {
+    console.log();
   };
 
   const handleChangeShortTerm = async (value: string) => {
     const response = await fetchData();
-    setFilterData(response.data.filter((item : IDataType) => item.short_term + '' === value ))
+    setFilterData(
+      response.data.filter((item: IDataType) => item.short_term + "" === value)
+    );
   };
   const handleChangeContagion = async (value: string) => {
     const response = await fetchData();
-    setFilterData(response.data.filter((item : IDataType) => item.contagion + '' === value ))
+    setFilterData(
+      response.data.filter((item: IDataType) => item.contagion + "" === value)
+    );
   };
   const handleChangeEmergency = async (value: string) => {
     const response = await fetchData();
-    setFilterData(response.data.filter((item : IDataType) => item.emergency + '' === value ))
+    setFilterData(
+      response.data.filter((item: IDataType) => item.emergency + "" === value)
+    );
   };
   const handleChangeMileageSurcharge = async (value: string) => {
     const response = await fetchData();
-    setFilterData(response.data.filter((item : IDataType) => item.mileage_surcharge + '' === value ))
+    setFilterData(
+      response.data.filter(
+        (item: IDataType) => item.mileage_surcharge + "" === value
+      )
+    );
   };
   const handleChangePrimaryQuote = async (value: string) => {
     const response = await fetchData();
-    setFilterData(response.data.filter((item : IDataType) => item.primary_quote + '' === value ))
+    setFilterData(
+      response.data.filter(
+        (item: IDataType) => item.primary_quote + "" === value
+      )
+    );
   };
 
+  function debounce<Params extends any[]>(
+    func: (...args: Params) => any,
+    timeout: number = 1000,
+  ): (...args: Params) => void {
+    let timer: NodeJS.Timeout
+    return (...args: Params) => {
+      clearTimeout(timer)
+      timer = setTimeout(() => {
+        func(...args)
+      }, timeout)
+    }
+  }
+    
+
   const handleChangeName = async (e: ChangeEvent<HTMLInputElement>) => {
-    const response = await fetchData()
-    setFilterData(response.data.filter((item : IDataType) => e.target.value ? item.name.toLowerCase().includes(e.target.value.toLowerCase()) : item))
+    const response = await fetchData();
+    setFilterData(
+      response.data.filter((item: IDataType) =>
+        e.target.value
+          ? item.name.toLowerCase().includes(e.target.value.toLowerCase())
+          : item
+      )
+    );
   };
 
   const handleChangeQuoteId = async (e: ChangeEvent<HTMLInputElement>) => {
-    const response = await fetchData()
-    setFilterData(response.data.filter((item : IDataType) => e.target.value ? item.quote_id.toLowerCase().includes(e.target.value.toLowerCase()) : item))
-
+    const response = await fetchData();
+    setFilterData(
+      response.data.filter((item: IDataType) =>
+        e.target.value
+          ? item.quote_id.toLowerCase().includes(e.target.value.toLowerCase())
+          : item
+      )
+    );
   };
 
   const handleChangeBirthDay = async (
@@ -287,11 +330,13 @@ function TableContainer() {
     dateString: string
   ) => {
     const date = new Date(dateString).getTime();
-    const response = await fetchData()
-    setFilterData(response.data.filter((item : IDataType) => {
-      const DataDate = new Date(item.birthday).getTime();
-      return dateString ? DataDate === date : item;
-    }));
+    const response = await fetchData();
+    setFilterData(
+      response.data.filter((item: IDataType) => {
+        const DataDate = new Date(item.birthday).getTime();
+        return dateString ? DataDate === date : item;
+      })
+    );
   };
 
   const handleChangeStartDate = async (
@@ -299,28 +344,30 @@ function TableContainer() {
     dateString: string
   ) => {
     const date = new Date(dateString).getTime();
-    const response = await fetchData()
-    setFilterData(response.data.filter((item : IDataType) => {
-      const DataDate = new Date(item.start_date).getTime();
-      return dateString ? DataDate === date : item;
-    }));
+    const response = await fetchData();
+    setFilterData(
+      response.data.filter((item: IDataType) => {
+        const DataDate = new Date(item.start_date).getTime();
+        return dateString ? DataDate === date : item;
+      })
+    );
   };
 
   const handleChangeStatus = async (value: string) => {
-    const response = await fetchData()
-    response.data.map((item : IDataType) => { 
-      if(item.status === value) {
-        const newData = response.data.filter((item : IDataType) => item.status === value);
+    const response = await fetchData();
+    response.data.map((item: IDataType) => {
+      if (item.status === value) {
+        const newData = response.data.filter(
+          (item: IDataType) => item.status === value
+        );
         setFilterData(newData);
       }
-    })
-
+    });
   };
 
   const handleRemove = async (id: any) => {
-    const response = await fetchData()
-    setFilterData(response.data.filter((item : IDataType) => item.key !== id));
-
+    const response = await fetchData();
+    setFilterData(response.data.filter((item: IDataType) => item.key !== id));
   };
 
   useEffect(() => {
@@ -336,7 +383,11 @@ function TableContainer() {
       <Row gutter={16}>
         <Col span="6">
           <div className="input-container">
-            <Select placeholder="Change status" className="select-input" defaultValue={inputStatus}>
+            <Select
+              placeholder="Change status"
+              className="select-input"
+              defaultValue={inputStatus}
+            >
               <Option value="Option1">new</Option>
               <Option value="Option2">approved</Option>
               <Option value="Option3">rejected</Option>
