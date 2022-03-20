@@ -11,13 +11,24 @@ import {
   Tag,
 } from "antd";
 import React, { ChangeEvent, useEffect, useState } from "react";
-import fetchData from "../api/index";
+import {fetchData,paginationData,statusData,quoteData,nameData,birthdayData,startDateData} from "../api/index";
 
 const { Option } = Select;
 
 function TableContainer() {
   const [filterData, setFilterData] = useState<IDataType[]>([]);
   const [inputStatus, setInputStatus] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [status, setStatus] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [stateFilter, setStateFilter] = useState<IStateFilter>({
+    short_temp: '',
+    contagion: '',
+    emergency: '',
+    mileage_surcharge: '',
+    primary_quote: '',
+  });
 
   const dateFormat = "MM/DD/YYYY";
 
@@ -38,7 +49,7 @@ function TableContainer() {
           </div>
         );
       },
-      dataIndex: "quote_id",
+      dataIndex: "key",
     },
 
     {
@@ -50,7 +61,7 @@ function TableContainer() {
           </div>
         );
       },
-      dataIndex: "name",
+      dataIndex: "care_recipient_name",
     },
 
     {
@@ -62,7 +73,7 @@ function TableContainer() {
           </div>
         );
       },
-      dataIndex: "birthday",
+      dataIndex: "care_recipient_dob",
     },
     {
       title: "Rate",
@@ -73,14 +84,14 @@ function TableContainer() {
         return (
           <div style={styleTitleTable}>
             Short Term
-            <Select onChange={handleChangeShortTerm}>
+            <Select onChange={(e) => handleChangeInputSelect(e, "short_temp")}>
               <Option value="true">YES</Option>
               <Option value="false">NO</Option>
             </Select>
           </div>
         );
       },
-      dataIndex: "short_term",
+      dataIndex: "short_temp",
 
       render: (shortTerm: boolean) => {
         return shortTerm ? (
@@ -95,7 +106,7 @@ function TableContainer() {
         return (
           <div style={styleTitleTable}>
             Contagion
-            <Select onChange={handleChangeContagion}>
+            <Select onChange={(e) => handleChangeInputSelect(e, "contagion")}>
               <Option value="true">YES</Option>
               <Option value="false">NO</Option>
             </Select>
@@ -116,7 +127,7 @@ function TableContainer() {
         return (
           <div style={styleTitleTable}>
             Emergency
-            <Select onChange={handleChangeEmergency}>
+            <Select onChange={(e) => handleChangeInputSelect(e, "emergency")}>
               <Option value="true">YES</Option>
               <Option value="false">NO</Option>
             </Select>
@@ -137,7 +148,7 @@ function TableContainer() {
         return (
           <div style={styleTitleTable}>
             Mileage Surcharge
-            <Select onChange={handleChangeMileageSurcharge}>
+            <Select onChange={(e) => handleChangeInputSelect(e, "mileage_surcharge")}>
               <Option value="true">YES</Option>
               <Option value="false">NO</Option>
             </Select>
@@ -158,7 +169,7 @@ function TableContainer() {
         return (
           <div style={styleTitleTable}>
             Primary Quote
-            <Select onChange={handleChangePrimaryQuote}>
+            <Select onChange={(e) => handleChangeInputSelect(e, "primary_quote")}>
               <Option value="true">YES</Option>
               <Option value="false">NO</Option>
             </Select>
@@ -236,133 +247,91 @@ function TableContainer() {
   ];
 
   const rowSelection = {
-    onChange: (selectedRowKeys: React.Key[], selectedRows: IDataType[]) => {
-      console.log(
-        `selectedRowKeys: ${selectedRowKeys}`,
-        "selectedRows: ",
-        selectedRows
-      );
-      selectedRows.map((item) => setInputStatus(item.status));
+    onSelect: (record: IDataType, selected: boolean, selectedRows: IDataType[] ) => {
+    setStatus(record.status)
+    console.log(status);
     },
-  };
-  const selection = (
-    record: IDataType,
-    selected: any,
-    selectedRows: any,
-    nativeEvent: any
-  ) => {
-    console.log();
+    onSelectNone: () => {
+      setStatus("")
+    }
   };
 
-  const handleChangeShortTerm = async (value: string) => {
-    const response = await fetchData();
-    setFilterData(
-      response.data.filter((item: IDataType) => item.short_term + "" === value)
-    );
-  };
-  const handleChangeContagion = async (value: string) => {
-    const response = await fetchData();
-    setFilterData(
-      response.data.filter((item: IDataType) => item.contagion + "" === value)
-    );
-  };
-  const handleChangeEmergency = async (value: string) => {
-    const response = await fetchData();
-    setFilterData(
-      response.data.filter((item: IDataType) => item.emergency + "" === value)
-    );
-  };
-  const handleChangeMileageSurcharge = async (value: string) => {
-    const response = await fetchData();
-    setFilterData(
-      response.data.filter(
-        (item: IDataType) => item.mileage_surcharge + "" === value
-      )
-    );
-  };
-  const handleChangePrimaryQuote = async (value: string) => {
-    const response = await fetchData();
-    setFilterData(
-      response.data.filter(
-        (item: IDataType) => item.primary_quote + "" === value
-      )
-    );
-  };
+
+  const handleChangeInputSelect = (value:boolean, key : string) => {
+  console.log("🚀 ~ file: TableContainer.tsx ~ line 261 ~ handleChangeInputSelect ~ key", key)
+  console.log("🚀 ~ file: TableContainer.tsx ~ line 261 ~ handleChangeInputSelect ~ value", value)
+  }
+
+  // const handleChangeShortTerm = async (value: string) => {
+  //   setStateFilter({...stateFilter, short_temp :value})
+  // };
+  
+  // const handleChangeContagion = async (value: string) => {
+
+  // };
+
+  // const handleChangeEmergency = async (value: string) => {
+
+  // };
+
+  // const handleChangeMileageSurcharge = async (value: string) => {
+
+  // };
+
+  // const handleChangePrimaryQuote = async (value: string) => {
+ 
+  // };
 
   function debounce<Params extends any[]>(
     func: (...args: Params) => any,
-    timeout: number = 1000,
+    timeout: number = 1000
   ): (...args: Params) => void {
-    let timer: NodeJS.Timeout
+    let timer: NodeJS.Timeout;
     return (...args: Params) => {
-      clearTimeout(timer)
+      clearTimeout(timer);
       timer = setTimeout(() => {
-        func(...args)
-      }, timeout)
-    }
+        func(...args);
+      }, timeout);
+    };
   }
-    
 
   const handleChangeName = async (e: ChangeEvent<HTMLInputElement>) => {
-    const response = await fetchData();
-    setFilterData(
-      response.data.filter((item: IDataType) =>
-        e.target.value
-          ? item.name.toLowerCase().includes(e.target.value.toLowerCase())
-          : item
-      )
-    );
-  };
+    const response = await nameData(e.target.value);
+    setFilterData(response.data)
+  }
 
   const handleChangeQuoteId = async (e: ChangeEvent<HTMLInputElement>) => {
-    const response = await fetchData();
-    setFilterData(
-      response.data.filter((item: IDataType) =>
-        e.target.value
-          ? item.quote_id.toLowerCase().includes(e.target.value.toLowerCase())
-          : item
-      )
-    );
+    const response = await quoteData(e.target.value);
+    setFilterData(response.data)
+    // setFilterData(
+    //   response.data.filter((item: IDataType) =>
+    //     e.target.value
+    //       ? item.quote_id.toLowerCase().includes(e.target.value.toLowerCase())
+    //       : item
+    //   )
+    // );
   };
 
   const handleChangeBirthDay = async (
     dataDate: moment.Moment | null,
     dateString: string
   ) => {
-    const date = new Date(dateString).getTime();
-    const response = await fetchData();
-    setFilterData(
-      response.data.filter((item: IDataType) => {
-        const DataDate = new Date(item.birthday).getTime();
-        return dateString ? DataDate === date : item;
-      })
-    );
+    const response = await birthdayData(dateString);
+    setFilterData(response.data);
   };
 
   const handleChangeStartDate = async (
     dataDate: moment.Moment | null,
     dateString: string
   ) => {
-    const date = new Date(dateString).getTime();
-    const response = await fetchData();
-    setFilterData(
-      response.data.filter((item: IDataType) => {
-        const DataDate = new Date(item.start_date).getTime();
-        return dateString ? DataDate === date : item;
-      })
-    );
+    const response = await startDateData(dateString);
+    setFilterData(response.data);
   };
 
   const handleChangeStatus = async (value: string) => {
-    const response = await fetchData();
-    response.data.map((item: IDataType) => {
-      if (item.status === value) {
-        const newData = response.data.filter(
-          (item: IDataType) => item.status === value
-        );
-        setFilterData(newData);
-      }
-    });
+    const response = await statusData(value);
+    setFilterData(response.data)
+    
   };
 
   const handleRemove = async (id: any) => {
@@ -370,13 +339,26 @@ function TableContainer() {
     setFilterData(response.data.filter((item: IDataType) => item.key !== id));
   };
 
+
+  const handlePaginationChange = async (page: number) => {
+    setLoading(true);
+    const response = await paginationData(page);
+    setFilterData(response.data);
+    setCurrentPage(page);
+    setTotalPages(response.data.length);
+    setLoading(false);
+  };
+
   useEffect(() => {
+    setLoading(true);
     const fetchDataTable = async () => {
       const response = await fetchData();
       setFilterData(response.data);
+    setLoading(false);
     };
     fetchDataTable();
   }, []);
+
 
   return (
     <div className="container">
@@ -386,7 +368,7 @@ function TableContainer() {
             <Select
               placeholder="Change status"
               className="select-input"
-              defaultValue={inputStatus}
+              defaultValue={status}
             >
               <Option value="Option1">new</Option>
               <Option value="Option2">approved</Option>
@@ -407,10 +389,12 @@ function TableContainer() {
         }}
         columns={columns}
         dataSource={filterData}
+        loading={loading}
         size="small"
         rowClassName="row-class"
+        pagination={{pageSize: 10,total: 50,current: currentPage,onChange: handlePaginationChange}}
       />
-      {/* <Pagination defaultCurrent={1} total={50} /> */}
+
     </div>
   );
 }

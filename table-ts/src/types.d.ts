@@ -16,3 +16,11 @@ interface IDataType {
   updated_date: dateTime;
   status: string;
 }
+
+interface IStateFilter {
+  short_temp: string;
+  contagion: string;
+  emergency: string;
+  mileage_surcharge: string;
+  primary_quote: string;
+}
