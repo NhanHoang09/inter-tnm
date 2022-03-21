@@ -18,9 +18,15 @@ interface IDataType {
 }
 
 interface IStateFilter {
-  short_temp: string;
-  contagion: string;
-  emergency: string;
-  mileage_surcharge: string;
-  primary_quote: string;
+  
+  quote_id: any;
+  name: any;
+  birthday: any;
+  short_temp: any;
+  contagion: any;
+  emergency: any;
+  mileage_surcharge: any;
+  primary_quote: any;
+  start_date: any;
+  status: any;
 }

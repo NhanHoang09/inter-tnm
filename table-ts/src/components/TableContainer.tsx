@@ -11,23 +11,27 @@ import {
   Tag,
 } from "antd";
 import React, { ChangeEvent, useEffect, useState } from "react";
-import {fetchData,paginationData,statusData,quoteData,nameData,birthdayData,startDateData} from "../api/index";
+// import {fetchData,paginationData,statusData,quoteData,nameData,birthdayData,startDateData} from "../api/index";
+import axios from "axios";
 
 const { Option } = Select;
 
-function TableContainer() {
+const TableContainer: React.FC = () => {
   const [filterData, setFilterData] = useState<IDataType[]>([]);
-  const [inputStatus, setInputStatus] = useState<string>("");
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [totalPages, setTotalPages] = useState<number>(0);
   const [status, setStatus] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [stateFilter, setStateFilter] = useState<IStateFilter>({
-    short_temp: '',
-    contagion: '',
-    emergency: '',
-    mileage_surcharge: '',
-    primary_quote: '',
+  const [stateFilter, setStateFilter] = useState<any>({
+    _page: 1,
+    quote_id: null,
+    name: null,
+    birthday: null,
+    short_temp: null,
+    contagion: null,
+    emergency: null,
+    mileage_surcharge: null,
+    primary_quote: null,
+    start_date: null,
+    status: null,
   });
 
   const dateFormat = "MM/DD/YYYY";
@@ -148,7 +152,9 @@ function TableContainer() {
         return (
           <div style={styleTitleTable}>
             Mileage Surcharge
-            <Select onChange={(e) => handleChangeInputSelect(e, "mileage_surcharge")}>
+            <Select
+              onChange={(e) => handleChangeInputSelect(e, "mileage_surcharge")}
+            >
               <Option value="true">YES</Option>
               <Option value="false">NO</Option>
             </Select>
@@ -169,7 +175,9 @@ function TableContainer() {
         return (
           <div style={styleTitleTable}>
             Primary Quote
-            <Select onChange={(e) => handleChangeInputSelect(e, "primary_quote")}>
+            <Select
+              onChange={(e) => handleChangeInputSelect(e, "primary_quote")}
+            >
               <Option value="true">YES</Option>
               <Option value="false">NO</Option>
             </Select>
@@ -242,45 +250,59 @@ function TableContainer() {
     },
     {
       title: "Delete",
-      render: () => <DeleteOutlined onClick={handleRemove} />,
+      render: () => <DeleteOutlined />,
     },
   ];
 
   const rowSelection = {
-    onSelect: (record: IDataType, selected: boolean, selectedRows: IDataType[] ) => {
-    setStatus(record.status)
-    console.log(status);
+    onSelect: (
+      record: IDataType,
+      selected: boolean,
+      selectedRows: IDataType[]
+    ) => {
+      setStatus(record.status);
+      console.log(status);
     },
     onSelectNone: () => {
-      setStatus("")
-    }
+      setStatus("");
+    },
   };
 
 
-  const handleChangeInputSelect = (value:boolean, key : string) => {
-  console.log("🚀 ~ file: TableContainer.tsx ~ line 261 ~ handleChangeInputSelect ~ key", key)
-  console.log("🚀 ~ file: TableContainer.tsx ~ line 261 ~ handleChangeInputSelect ~ value", value)
-  }
+  const handleFilter = async (params: object) => {
+    const response = await axios.get(
+      "https://tablemanage.herokuapp.com/table?",
+      { params: params }
+    );
+    console.log(
+      "🚀 ~ file: TableContainer.tsx ~ line 286 ~ handleFilter ~ response",
+      response
+    );
+    setFilterData(response.data);
+  };
 
-  // const handleChangeShortTerm = async (value: string) => {
-  //   setStateFilter({...stateFilter, short_temp :value})
-  // };
-  
-  // const handleChangeContagion = async (value: string) => {
+  useEffect(() => {
+    handleFilter(stateFilter);
+  }, [stateFilter]);
 
-  // };
 
-  // const handleChangeEmergency = async (value: string) => {
-
-  // };
-
-  // const handleChangeMileageSurcharge = async (value: string) => {
-
-  // };
-
-  // const handleChangePrimaryQuote = async (value: string) => {
- 
-  // };
+  const handleChangeInputSelect = (value: string, key: string) => {
+    if (key === "short_temp") {
+      setStateFilter({ ...stateFilter, short_temp: value });
+    }
+    if (key === "contagion") {
+      setStateFilter({ ...stateFilter, contagion: value });
+    }
+    if (key === "emergency") {
+      setStateFilter({ ...stateFilter, emergency: value });
+    }
+    if (key === "mileage_surcharge") {
+      setStateFilter({ ...stateFilter, mileage_surcharge: value });
+    }
+    if (key === "primary_quote") {
+      setStateFilter({ ...stateFilter, primary_quote: value });
+    }
+  };
 
   function debounce<Params extends any[]>(
     func: (...args: Params) => any,
@@ -295,70 +317,42 @@ function TableContainer() {
     };
   }
 
-  const handleChangeName = async (e: ChangeEvent<HTMLInputElement>) => {
-    const response = await nameData(e.target.value);
-    setFilterData(response.data)
-  }
-
-  const handleChangeQuoteId = async (e: ChangeEvent<HTMLInputElement>) => {
-    const response = await quoteData(e.target.value);
-    setFilterData(response.data)
-    // setFilterData(
-    //   response.data.filter((item: IDataType) =>
-    //     e.target.value
-    //       ? item.quote_id.toLowerCase().includes(e.target.value.toLowerCase())
-    //       : item
-    //   )
-    // );
+  const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
+    setStateFilter({ ...stateFilter, name: e.target.value });
   };
 
-  const handleChangeBirthDay = async (
+  const handleChangeQuoteId = (e: ChangeEvent<HTMLInputElement>) => {
+    setStateFilter({ ...stateFilter, quote_id: e.target.value });
+  };
+
+  const handleChangeBirthDay = (
     dataDate: moment.Moment | null,
     dateString: string
   ) => {
-    const response = await birthdayData(dateString);
-    setFilterData(response.data);
+    setStateFilter({ ...stateFilter, birth_day: dateString });
   };
 
-  const handleChangeStartDate = async (
+  const handleChangeStartDate = (
     dataDate: moment.Moment | null,
     dateString: string
   ) => {
-    const response = await startDateData(dateString);
-    setFilterData(response.data);
+    setFilterData({ ...stateFilter, start_date: dateString });
   };
 
-  const handleChangeStatus = async (value: string) => {
-    const response = await statusData(value);
-    setFilterData(response.data)
-    
+  const handleChangeStatus = (value: string) => {
+    setStateFilter({ ...stateFilter, status: value });
   };
 
-  const handleRemove = async (id: any) => {
-    const response = await fetchData();
-    setFilterData(response.data.filter((item: IDataType) => item.key !== id));
+  // const handleRemove = async (id: any) => {
+  //   const response = await fetchData();
+  //   setFilterData(response.data.filter((item: IDataType) => item.key !== id));
+  // };
+
+  const handlePaginationChange = (page: number) => {
+  console.log("🚀 ~ file: TableContainer.tsx ~ line 340 ~ handlePaginationChange ~ page", page)
+    setFilterData({ ...stateFilter, _page: page });
+    console.log("🚀 ~ file: TableContainer.tsx ~ line 342 ~ handlePaginationChange ~ stateFilter", stateFilter)
   };
-
-
-  const handlePaginationChange = async (page: number) => {
-    setLoading(true);
-    const response = await paginationData(page);
-    setFilterData(response.data);
-    setCurrentPage(page);
-    setTotalPages(response.data.length);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    setLoading(true);
-    const fetchDataTable = async () => {
-      const response = await fetchData();
-      setFilterData(response.data);
-    setLoading(false);
-    };
-    fetchDataTable();
-  }, []);
-
 
   return (
     <div className="container">
@@ -392,11 +386,14 @@ function TableContainer() {
         loading={loading}
         size="small"
         rowClassName="row-class"
-        pagination={{pageSize: 10,total: 50,current: currentPage,onChange: handlePaginationChange}}
+        pagination={{
+          pageSize: 10,
+          total: 100,
+          onChange: handlePaginationChange,
+        }}
       />
-
     </div>
   );
-}
+};
 
 export default TableContainer;
