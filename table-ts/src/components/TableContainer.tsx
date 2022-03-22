@@ -11,20 +11,22 @@ import {
   Tag,
 } from "antd";
 import React, { ChangeEvent, useEffect, useState } from "react";
-// import {fetchData,paginationData,statusData,quoteData,nameData,birthdayData,startDateData} from "../api/index";
 import axios from "axios";
 
 const { Option } = Select;
 
 const TableContainer: React.FC = () => {
   const [filterData, setFilterData] = useState<IDataType[]>([]);
-  const [status, setStatus] = useState<string>("");
+  const [changeStatus, setChangeStatus] = useState<string>("");
+  const [valueChecked, setValueChecked] = useState<IDataType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [stateFilter, setStateFilter] = useState<any>({
+  const [reLoader, setReLoader] = useState<boolean>(false);
+  const [totalPage, setTotalPage] = useState<number>();
+  const [stateFilter, setStateFilter] = useState<Object>({
     _page: 1,
     quote_id: null,
-    name: null,
-    birthday: null,
+    q: null,
+    care_recipient_dob: null,
     short_temp: null,
     contagion: null,
     emergency: null,
@@ -33,8 +35,6 @@ const TableContainer: React.FC = () => {
     start_date: null,
     status: null,
   });
-
-  const dateFormat = "MM/DD/YYYY";
 
   const styleTitleTable: object = {
     display: "flex",
@@ -47,7 +47,7 @@ const TableContainer: React.FC = () => {
     {
       title: () => {
         return (
-          <div style={styleTitleTable}>
+          <div style={{ textAlign: "center" }}>
             Quote ID
             <Input onChange={debounce(handleChangeQuoteId)} />
           </div>
@@ -73,14 +73,18 @@ const TableContainer: React.FC = () => {
         return (
           <div style={styleTitleTable}>
             Care Recipient DOB
-            <DatePicker onChange={handleChangeBirthDay} format={dateFormat} />
+            <DatePicker onChange={handleChangeBirthDay} />
           </div>
         );
       },
       dataIndex: "care_recipient_dob",
     },
     {
-      title: "Rate",
+      title: () => {
+        return (
+          <div style={{ ...styleTitleTable, marginBottom: "32px" }}>Rate</div>
+        );
+      },
       dataIndex: "rate",
     },
     {
@@ -198,14 +202,20 @@ const TableContainer: React.FC = () => {
         return (
           <div style={styleTitleTable}>
             Start Date
-            <DatePicker onChange={handleChangeStartDate} format={dateFormat} />
+            <DatePicker onChange={handleChangeStartDate} />
           </div>
         );
       },
       dataIndex: "start_date",
     },
     {
-      title: "Created Date",
+      title: () => {
+        return (
+          <div style={{ ...styleTitleTable, marginBottom: "32px" }}>
+            Created Date
+          </div>
+        );
+      },
       dataIndex: "created_date",
       sorter: (a: IDataType, b: IDataType) => {
         return (
@@ -216,14 +226,26 @@ const TableContainer: React.FC = () => {
     },
 
     {
-      title: "Created By",
+      title: () => {
+        return (
+          <div style={{ ...styleTitleTable, marginBottom: "32px" }}>
+            Created By
+          </div>
+        );
+      },
       dataIndex: "created_by",
       sorter: (a: IDataType, b: IDataType) => {
         return a.created_by.length - b.created_by.length;
       },
     },
     {
-      title: "Updated Date",
+      title: () => {
+        return (
+          <div style={{ ...styleTitleTable, marginBottom: "32px" }}>
+            Updated Date
+          </div>
+        );
+      },
       dataIndex: "updated_date",
       sorter: (a: IDataType, b: IDataType) => {
         return (
@@ -250,41 +272,41 @@ const TableContainer: React.FC = () => {
     },
     {
       title: "Delete",
-      render: () => <DeleteOutlined />,
+      render: (record: IDataType) => (
+        <DeleteOutlined onClick={() => handleRemove(record.key)} />
+      ),
     },
   ];
 
+  const onSelectChange = (
+    record: IDataType,
+    selected: boolean,
+    selectedRows: IDataType[]
+  ) => {
+    setValueChecked(selectedRows);
+  };
+
   const rowSelection = {
-    onSelect: (
-      record: IDataType,
-      selected: boolean,
-      selectedRows: IDataType[]
-    ) => {
-      setStatus(record.status);
-      console.log(status);
-    },
+    onSelect: onSelectChange,
     onSelectNone: () => {
-      setStatus("");
+      // setStatus("");
     },
   };
 
-
   const handleFilter = async (params: object) => {
+    setLoading(true);
     const response = await axios.get(
       "https://tablemanage.herokuapp.com/table?",
       { params: params }
     );
-    console.log(
-      "🚀 ~ file: TableContainer.tsx ~ line 286 ~ handleFilter ~ response",
-      response
-    );
     setFilterData(response.data);
+    setLoading(false);
+    setTotalPage(response.data.length);
   };
 
   useEffect(() => {
     handleFilter(stateFilter);
-  }, [stateFilter]);
-
+  }, [stateFilter, reLoader]);
 
   const handleChangeInputSelect = (value: string, key: string) => {
     if (key === "short_temp") {
@@ -318,7 +340,7 @@ const TableContainer: React.FC = () => {
   }
 
   const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
-    setStateFilter({ ...stateFilter, name: e.target.value });
+    setStateFilter({ ...stateFilter, q: e.target.value });
   };
 
   const handleChangeQuoteId = (e: ChangeEvent<HTMLInputElement>) => {
@@ -329,29 +351,36 @@ const TableContainer: React.FC = () => {
     dataDate: moment.Moment | null,
     dateString: string
   ) => {
-    setStateFilter({ ...stateFilter, birth_day: dateString });
+    setStateFilter({ ...stateFilter, care_recipient_dob: dateString });
   };
 
   const handleChangeStartDate = (
     dataDate: moment.Moment | null,
     dateString: string
   ) => {
-    setFilterData({ ...stateFilter, start_date: dateString });
+    setStateFilter({ ...stateFilter, start_date: dateString });
   };
 
   const handleChangeStatus = (value: string) => {
     setStateFilter({ ...stateFilter, status: value });
   };
 
-  // const handleRemove = async (id: any) => {
-  //   const response = await fetchData();
-  //   setFilterData(response.data.filter((item: IDataType) => item.key !== id));
-  // };
+  const handleRemove = async (key: string) => {
+    setFilterData(filterData.filter((item: IDataType) => item.key !== key));
+  };
 
   const handlePaginationChange = (page: number) => {
-  console.log("🚀 ~ file: TableContainer.tsx ~ line 340 ~ handlePaginationChange ~ page", page)
-    setFilterData({ ...stateFilter, _page: page });
-    console.log("🚀 ~ file: TableContainer.tsx ~ line 342 ~ handlePaginationChange ~ stateFilter", stateFilter)
+    setStateFilter({ ...stateFilter, _page: page });
+  };
+
+  const handleSubmit = () => {
+    valueChecked.map(async (item) => {
+      await axios.put(`https://tablemanage.herokuapp.com/table/${item.id}`, {
+        ...item,
+        status: changeStatus,
+      });
+      setReLoader(!reLoader);
+    });
   };
 
   return (
@@ -362,17 +391,19 @@ const TableContainer: React.FC = () => {
             <Select
               placeholder="Change status"
               className="select-input"
-              defaultValue={status}
+              onChange={(value: string) => setChangeStatus(value)}
             >
-              <Option value="Option1">new</Option>
-              <Option value="Option2">approved</Option>
-              <Option value="Option3">rejected</Option>
-              <Option value="Option4">closed</Option>
+              <Option value="new">new</Option>
+              <Option value="approved">approved</Option>
+              <Option value="rejected">rejected</Option>
+              <Option value="closed">closed</Option>
             </Select>
           </div>
         </Col>
         <Col span="6">
-          <Button className="btn btn-default">Apply</Button>
+          <Button className="btn btn-default" onClick={handleSubmit}>
+            Apply
+          </Button>
         </Col>
       </Row>
       <Table
@@ -386,11 +417,13 @@ const TableContainer: React.FC = () => {
         loading={loading}
         size="small"
         rowClassName="row-class"
-        pagination={{
-          pageSize: 10,
-          total: 100,
-          onChange: handlePaginationChange,
-        }}
+        pagination={false}
+      />
+      <Pagination
+        className="pagination"
+        total={100}
+        onChange={handlePaginationChange}
+        hideOnSinglePage={true}
       />
     </div>
   );

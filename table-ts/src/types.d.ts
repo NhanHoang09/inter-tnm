@@ -1,9 +1,10 @@
 
 interface IDataType {
-  key: React.Key;
+  id: number;
+  key: string;
   quote_id: string;
   name: string;
-  birthday: dateTime;
+  care_recipient_dob: dateTime;
   rate: number;
   short_term: boolean;
   contagion: boolean;
@@ -15,18 +16,4 @@ interface IDataType {
   created_by: string;
   updated_date: dateTime;
   status: string;
-}
-
-interface IStateFilter {
-  
-  quote_id: any;
-  name: any;
-  birthday: any;
-  short_temp: any;
-  contagion: any;
-  emergency: any;
-  mileage_surcharge: any;
-  primary_quote: any;
-  start_date: any;
-  status: any;
 }
