@@ -1,5 +1,16 @@
 {
   "compilerOptions": {
+    "baseUrl": "./src", 
+    "paths": {
+      "@components/*": ["components/*", "components/common/*","components/ui/*"],
+      "@icons/*": ["components/icons/*"],
+      "@hooks/*": ["hooks/*"],
+      "@lib/*": ["lib/*"],
+      "@pages/*": ["pages/*"],
+      "@utils/*": ["utils/*"],
+      "@typings/*": ["typings/*"],
+    },
+    "typeRoots": ["typings", "node_modules/@types"],
     "target": "es5",
     "lib": [
       "dom",

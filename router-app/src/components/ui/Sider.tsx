@@ -2,8 +2,8 @@ import { Layout, Menu } from 'antd'
 import { SiderProps } from 'antd/lib/layout/Sider'
 import { useHistory } from 'react-router-dom'
 import styled, { keyframes } from 'styled-components'
-import { publicUrl } from '@utils/env'
-import { routes, RouteProps } from '@lib/routes'
+import { publicUrl } from '../../utils/env'
+import { routes, RouteProps } from '../../lib/routes'
 
 interface Props extends SiderProps {}
 

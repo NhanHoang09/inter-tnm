@@ -66,32 +66,32 @@ export const useQueryUser = ({
   }
 }
 
-export const useCreateUser = (options: MutationOptions = {}) => {
-  const { mutate, isLoading } = useMutation(
-    (data: Partial<User>) =>
-      request('https://jsonplaceholder.typicode.com/users', {
-        method: 'POST',
-        body: data,
-      }),
-    {
-      ...options,
-    }
-  )
+// export const useCreateUser = (options: MutationOptions = {}) => {
+//   const { mutate, isLoading } = useMutation(
+//     (data: Partial<User>) =>
+//       request('https://jsonplaceholder.typicode.com/users', {
+//         method: 'POST',
+//         body: data,
+//       }),
+//     {
+//       ...options,
+//     }
+//   )
 
-  return [isLoading, mutate] as MutationResult
-}
+//   return [isLoading, mutate] as MutationResult
+// }
 
-export const useUpdateUser = (options: MutationOptions = {}) => {
-  const { mutate, isLoading } = useMutation(
-    (data: Partial<User>) =>
-      request('https://jsonplaceholder.typicode.com/users/{id}', {
-        method: 'PATCH',
-        body: data,
-      }),
-    {
-      ...options,
-    }
-  )
+// export const useUpdateUser = (options: MutationOptions = {}) => {
+//   const { mutate, isLoading } = useMutation(
+//     (data: Partial<User>) =>
+//       request('https://jsonplaceholder.typicode.com/users/{id}', {
+//         method: 'PATCH',
+//         body: data,
+//       }),
+//     {
+//       ...options,
+//     }
+//   )
 
-  return [isLoading, mutate] as MutationResult
-}
+//   return [isLoading, mutate] as MutationResult
+// }

@@ -8,8 +8,8 @@ import IconEdit from '@icons/Edit'
 import {
   useUsers,
   useQueryUser,
-  useCreateUser,
-  useUpdateUser,
+  // useCreateUser,
+  // useUpdateUser,
   User,
 } from './queries'
 import UserModal from './UserModal'
@@ -42,13 +42,13 @@ export default function Home() {
     },
   }
 
-  const [creating, handleAdd] = useCreateUser(mutationOpts)
-  const [updating, handleUpdate] = useUpdateUser(mutationOpts)
+  // const [creating, handleAdd] = useCreateUser(mutationOpts)
+  // const [updating, handleUpdate] = useUpdateUser(mutationOpts)
 
-  const handleOk = (values: Partial<User>) => {
-    const handler = values.id ? handleUpdate : handleAdd
-    handler(values)
-  }
+  // const handleOk = (values: Partial<User>) => {
+  //   const handler = values.id ? handleUpdate : handleAdd
+  //   handler(values)
+  // }
 
   const handleSearch = (value: string) => {
     setQuery(prev => ({ ...prev, q: value }))
@@ -128,8 +128,8 @@ export default function Home() {
           item={user.data}
           loadingData={user.isFetching}
           onCancel={editModal.close}
-          confirmLoading={creating || updating}
-          onOk={handleOk}
+          // confirmLoading={creating || updating}
+          // onOk={handleOk}
         />
       )}
       <Layout path={[{ name: '列表范例' }]}>
