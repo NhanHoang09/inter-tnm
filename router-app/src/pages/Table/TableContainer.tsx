@@ -12,6 +12,7 @@ import {
 } from 'antd'
 import React, { ChangeEvent, useEffect, useState } from 'react'
 import axios from 'axios'
+import {IDataType,IStateFilter} from "@lib/types"
 import './table.css'
 
 const { Option } = Select

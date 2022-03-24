@@ -1,6 +1,18 @@
 {
   "hosting": [
     {
+      "target": "templateadmin",
+      "public": "router-app/build",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "index.html"
+        }
+      ]
+    },
+    {
       "target": "tablets",
       "public": "table-ts/build",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],

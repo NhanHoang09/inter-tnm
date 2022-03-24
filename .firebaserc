@@ -43,6 +43,9 @@
         ],
         "tablets": [
           "table-ts-intern-tnm"
+        ],
+        "templateadmin": [
+          "template-antd-admin-intern-tnm"
         ]
       }
     }

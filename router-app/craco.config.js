@@ -27,6 +27,7 @@ module.exports = {
           pure: true,
         },
       ],
+      
     ],
   },
   webpack: {
@@ -64,7 +65,7 @@ module.exports = {
         )
       )
 
-      // config.resolve.plugins.push(new AntdDayjsWebpackPlugin())
+      config.resolve.plugins.push(new AntdDayjsWebpackPlugin())
 
       return config
     },
