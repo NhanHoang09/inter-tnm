@@ -1,5 +1,5 @@
 {
-  "name": "router-app",
+  "name": "templated-antd-admin",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -10,6 +10,7 @@
     "react-dom": "^17.0.2",
     "react-query": "^3.19.2",
     "react-router-dom": "^5.2.0",
+    "react-scripts": "^5.0.0",
     "styled-components": "^5.3.0",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.7"
   },
@@ -43,13 +44,12 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "@types/history": "^4.7.9",
-    "@types/jest": "^26.0.24",
-    "@types/node": "^12.20.47",
-    "@types/query-string": "^6.3.0",
-    "@types/react": "^17.0.41",
-    "@types/react-dom": "^17.0.14",
+    "@types/jest": "^26.0.15",
+    "@types/node": "^12.0.0",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
     "@types/react-query": "^1.2.9",
-    "@types/react-router-dom": "^5.3.3",
+    "@types/react-router-dom": "^5.1.8",
     "@types/styled-components": "^5.1.12",
     "antd-dayjs-webpack-plugin": "^1.0.6",
     "autoprefixer": "^9",
@@ -60,7 +60,7 @@
     "lint-staged": "^11.1.2",
     "postcss": "^7",
     "prettier": "^2.3.2",
-    "typescript": "^4.6.2",
+    "typescript": "^4.1.2",
     "web-vitals": "^1.0.1",
     "webpack-bundle-analyzer": "^4.4.2"
   },

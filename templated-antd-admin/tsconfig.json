@@ -1,6 +1,19 @@
 {
   "compilerOptions": {
     "baseUrl": "./src",
+    "paths": {
+      "@components/*": [
+        "components/*",
+        "components/ui/*",
+        "components/common/*"
+      ],
+      "@icons/*": ["components/icons/*"],
+      "@utils/*": ["utils/*"],
+      "@services/*": ["services/*"],
+      "@pages/*": ["pages/*"],
+      "@hooks/*": ["hooks/*"],
+      "@lib/*": ["lib/*"]
+    },
     "target": "es5",
     "lib": [
       "dom",
@@ -19,11 +32,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx",
-    "typeRoots": [
-      "typings",
-      "node_modules/@types"
-    ]
+    "jsx": "react-jsx"
   },
   "include": [
     "src"

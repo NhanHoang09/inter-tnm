@@ -10,9 +10,9 @@ import {
   Table,
   Tag,
 } from 'antd'
-import React, { ChangeEvent, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import {IDataType,IStateFilter} from "@lib/types"
+import { IDataType, IStateFilter } from '@lib/types'
 import './table.css'
 
 const { Option } = Select
@@ -36,10 +36,10 @@ const TableContainer = () => {
     width: '150px',
   }
 
-  const titleInputSelect = (title: string) => {
+  const titleInputSelect = (name: string, title: string) => {
     return (
       <div style={styleTitleTable}>
-        {title}
+        {name}
         <Select onChange={e => handleChangeInputSelect(e, title)}>
           <Option value="true">YES</Option>
           <Option value="false">NO</Option>
@@ -54,115 +54,88 @@ const TableContainer = () => {
     )
   }
 
+  const valueInputSelect = (value: boolean) => {
+    return value ? <Tag color="blue">YES</Tag> : <Tag color="red">NO</Tag>
+  }
+
+  const titleInputSearch = (name: string, value: string) => {
+    return (
+      <div style={{ ...styleTitleTable, width: 'auto' }}>
+        {name}
+        <Input
+          style={{ width: 'auto' }}
+          onChange={debounce(e =>
+            handleChangeInputSearch(e.target.value, value)
+          )}
+        />
+      </div>
+    )
+  }
+
+  const titleInputDate = (name: string, value: string) => {
+    return (
+      <div style={styleTitleTable}>
+        {name}
+        <DatePicker
+          onChange={(dataDate: moment.Moment | null, dateString: string) =>
+            handleChangeDateTime(dateString, value)
+          }
+        />
+      </div>
+    )
+  }
+
   const columns = [
     {
-      title: () => {
-        return (
-          <div style={{ textAlign: 'center' }}>
-            Quote ID
-            <Input onChange={debounce(handleChangeQuoteId)} />
-          </div>
-        )
-      },
+      title: titleInputSearch('Quote ID', 'key'),
       dataIndex: 'key',
     },
 
     {
-      title: () => {
-        return (
-          <div style={styleTitleTable}>
-            Care Recipient Name
-            <Input onChange={debounce(handleChangeName)} />
-          </div>
-        )
-      },
+      title: titleInputSearch('Care Recipient Name', 'q'),
       dataIndex: 'care_recipient_name',
     },
 
     {
-      title: () => {
-        return (
-          <div style={styleTitleTable}>
-            Care Recipient DOB
-            <DatePicker onChange={handleChangeBirthDay} />
-          </div>
-        )
-      },
+      title: titleInputDate('Care Recipient DOB', 'care_recipient_dob'),
       dataIndex: 'care_recipient_dob',
     },
     {
-      title: customTitle("Rate"),
+      title: customTitle('Rate'),
       dataIndex: 'rate',
     },
     {
-      title: titleInputSelect('short_temp'),
+      title: titleInputSelect('Short Temp', 'short_temp'),
       dataIndex: 'short_temp',
 
-      render: (shortTerm: boolean) => {
-        return shortTerm ? (
-          <Tag color="blue">YES</Tag>
-        ) : (
-          <Tag color="red">NO</Tag>
-        )
-      },
+      render: valueInputSelect,
     },
     {
-      title: titleInputSelect('Contagion'),
+      title: titleInputSelect('Contagion', 'contagion'),
       dataIndex: 'contagion',
-      render: (contagion: boolean) => {
-        return contagion ? (
-          <Tag color="blue">YES</Tag>
-        ) : (
-          <Tag color="red">NO</Tag>
-        )
-      },
+      render: valueInputSelect,
     },
     {
-      title: titleInputSelect('Emergency'),
+      title: titleInputSelect('Emergency', 'emergency'),
       dataIndex: 'emergency',
-      render: (emergency: boolean) => {
-        return emergency ? (
-          <Tag color="blue">YES</Tag>
-        ) : (
-          <Tag color="red">NO</Tag>
-        )
-      },
+      render: valueInputSelect,
     },
     {
-      title: titleInputSelect('Mileage Surcharge'),
+      title: titleInputSelect('Mileage Surcharge', 'mileage_surcharge'),
       dataIndex: 'mileage_surcharge',
-      render: (mileageSurcharge: boolean) => {
-        return mileageSurcharge ? (
-          <Tag color="blue">YES</Tag>
-        ) : (
-          <Tag color="red">NO</Tag>
-        )
-      },
+      render: valueInputSelect,
     },
     {
-      title: titleInputSelect('Primary Quote'),
+      title: titleInputSelect('Primary Quote', 'primary_quote'),
       dataIndex: 'primary_quote',
-      render: (primaryQuote: boolean) => {
-        return primaryQuote ? (
-          <Tag color="blue">YES</Tag>
-        ) : (
-          <Tag color="red">NO</Tag>
-        )
-      },
+      render: valueInputSelect,
     },
     {
-      title: () => {
-        return (
-          <div style={styleTitleTable}>
-            Start Date
-            <DatePicker onChange={handleChangeStartDate} />
-          </div>
-        )
-      },
+      title: titleInputDate('Start Date', 'start_date'),
       dataIndex: 'start_date',
     },
     {
-      title: customTitle("Created Date"),
+      title: customTitle('Created Date'),
       dataIndex: 'created_date',
       sorter: (a: IDataType, b: IDataType) => {
         return (
@@ -173,14 +146,14 @@ const TableContainer = () => {
     },
 
     {
-      title: customTitle("Created By"),
+      title: customTitle('Created By'),
       dataIndex: 'created_by',
       sorter: (a: IDataType, b: IDataType) => {
         return a.created_by.length - b.created_by.length
       },
     },
     {
-      title: customTitle("Updated Date"),
+      title: customTitle('Updated Date'),
       dataIndex: 'updated_date',
       sorter: (a: IDataType, b: IDataType) => {
         return (
@@ -206,7 +179,7 @@ const TableContainer = () => {
       dataIndex: 'status',
     },
     {
-      title: customTitle("Delete"),
+      title: customTitle('Delete'),
       render: (record: IDataType) => (
         <DeleteOutlined onClick={() => handleRemove(record.key)} />
       ),
@@ -243,23 +216,8 @@ const TableContainer = () => {
     handleFilter(stateFilter)
   }, [stateFilter, reLoader])
 
-  const handleChangeInputSelect = (value: string, key: string) => {
-    // if (key === 'Short Temp') {
-    //   setStateFilter({ ...stateFilter, short_temp: value })
-    // }
-    // if (key === 'Contagion') {
-    //   setStateFilter({ ...stateFilter, contagion: value })
-    // }
-    // if (key === 'Emergency') {
-    //   setStateFilter({ ...stateFilter, emergency: value })
-    // }
-    // if (key === 'Mileage Surcharge') {
-    //   setStateFilter({ ...stateFilter, mileage_surcharge: value })
-    // }
-    // if (key === 'Primary Quote') {
-    //   setStateFilter({ ...stateFilter, primary_quote: value })
-    // }
-    setStateFilter({ ...stateFilter, [key]: value })
+  const handleChangeInputSelect = (value: string, name: string) => {
+    setStateFilter({ ...stateFilter, [name]: value })
   }
 
   function debounce<Params extends any[]>(
@@ -275,26 +233,12 @@ const TableContainer = () => {
     }
   }
 
-  const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
-    setStateFilter({ ...stateFilter, q: e.target.value })
+  const handleChangeInputSearch = (value: string, name: string) => {
+    setStateFilter({ ...stateFilter, [name]: value })
   }
 
-  const handleChangeQuoteId = (e: ChangeEvent<HTMLInputElement>) => {
-    setStateFilter({ ...stateFilter, quote_id: e.target.value })
-  }
-
-  const handleChangeBirthDay = (
-    dataDate: moment.Moment | null,
-    dateString: string
-  ) => {
-    setStateFilter({ ...stateFilter, care_recipient_dob: dateString })
-  }
-
-  const handleChangeStartDate = (
-    dataDate: moment.Moment | null,
-    dateString: string
-  ) => {
-    setStateFilter({ ...stateFilter, start_date: dateString })
+  const handleChangeDateTime = (value: string, name: string) => {
+    setStateFilter({ ...stateFilter, [name]: value })
   }
 
   const handleChangeStatus = (value: string) => {
