@@ -18,7 +18,7 @@ export type User = {
     geo: {
       lat: number
       lng: number
-    }
+    } 
   }
   phone: string
   website: string

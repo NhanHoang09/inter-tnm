@@ -10,24 +10,28 @@ import {
   Table,
   Tag,
 } from 'antd'
-import React, { useEffect, useState } from 'react'
+import React, {  useState } from 'react'
 import axios from 'axios'
 import { IDataType, IStateFilter } from '@lib/types'
+import {useData} from "./queries";
 import './table.css'
 
 const { Option } = Select
 
 const TableContainer = () => {
-  const [filterData, setFilterData] = useState<IDataType[]>([])
   const [changeStatus, setChangeStatus] = useState<string>('')
   const [valueChecked, setValueChecked] = useState<IDataType[]>([])
-  const [loading, setLoading] = useState<boolean>(false)
   const [reLoader, setReLoader] = useState<boolean>(false)
   const [totalPage, setTotalPage] = useState<number>()
 
-  const [stateFilter, setStateFilter] = useState<IStateFilter>({
+  const [stateFilter, setStateFilter] = useState<{ [key: string]: any }>({
     _page: 1,
   })
+
+  const { data, isFetching } = useData({
+    variables: stateFilter,
+  })
+
 
   const styleTitleTable: any = {
     display: 'flex',
@@ -93,12 +97,12 @@ const TableContainer = () => {
 
     {
       title: titleInputSearch('Care Recipient Name', 'q'),
-      dataIndex: 'care_recipient_name',
+      dataIndex: 'careRecipientName',
     },
 
     {
       title: titleInputDate('Care Recipient DOB', 'care_recipient_dob'),
-      dataIndex: 'care_recipient_dob',
+      dataIndex: 'careRecipientDob',
     },
     {
       title: customTitle('Rate'),
@@ -106,7 +110,7 @@ const TableContainer = () => {
     },
     {
       title: titleInputSelect('Short Temp', 'short_temp'),
-      dataIndex: 'short_temp',
+      dataIndex: 'shortTemp',
 
       render: valueInputSelect,
     },
@@ -122,21 +126,21 @@ const TableContainer = () => {
     },
     {
       title: titleInputSelect('Mileage Surcharge', 'mileage_surcharge'),
-      dataIndex: 'mileage_surcharge',
+      dataIndex: 'mileageSurcharge',
       render: valueInputSelect,
     },
     {
       title: titleInputSelect('Primary Quote', 'primary_quote'),
-      dataIndex: 'primary_quote',
+      dataIndex: 'primaryQuote',
       render: valueInputSelect,
     },
     {
       title: titleInputDate('Start Date', 'start_date'),
-      dataIndex: 'start_date',
+      dataIndex: 'startDate',
     },
     {
       title: customTitle('Created Date'),
-      dataIndex: 'created_date',
+      dataIndex: 'createdDate',
       sorter: (a: IDataType, b: IDataType) => {
         return (
           new Date(a.created_date).getTime() -
@@ -147,14 +151,14 @@ const TableContainer = () => {
 
     {
       title: customTitle('Created By'),
-      dataIndex: 'created_by',
+      dataIndex: 'createdBy',
       sorter: (a: IDataType, b: IDataType) => {
         return a.created_by.length - b.created_by.length
       },
     },
     {
       title: customTitle('Updated Date'),
-      dataIndex: 'updated_date',
+      dataIndex: 'updatedDate',
       sorter: (a: IDataType, b: IDataType) => {
         return (
           new Date(a.updated_date).getTime() -
@@ -201,21 +205,6 @@ const TableContainer = () => {
     },
   }
 
-  const handleFilter = async (params: IStateFilter) => {
-    setLoading(true)
-    const response = await axios.get(
-      'https://tablemanage.herokuapp.com/table?',
-      { params: params }
-    )
-    setFilterData(response.data)
-    setLoading(false)
-    setTotalPage(response.data.length)
-  }
-
-  useEffect(() => {
-    handleFilter(stateFilter)
-  }, [stateFilter, reLoader])
-
   const handleChangeInputSelect = (value: string, name: string) => {
     setStateFilter({ ...stateFilter, [name]: value })
   }
@@ -245,8 +234,8 @@ const TableContainer = () => {
     setStateFilter({ ...stateFilter, status: value })
   }
 
-  const handleRemove = async (key: string) => {
-    setFilterData(filterData.filter((item: IDataType) => item.key !== key))
+  const handleRemove = (key: string) => {
+    // setFilterData(filterData.filter((item: IDataType) => item.key !== key))
   }
 
   const handlePaginationChange = (page: number) => {
@@ -292,8 +281,8 @@ const TableContainer = () => {
           ...rowSelection,
         }}
         columns={columns}
-        dataSource={filterData}
-        loading={loading}
+        dataSource={data}
+        loading={isFetching}
         size="small"
         rowClassName="row-class"
         pagination={false}
