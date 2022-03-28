@@ -34,8 +34,8 @@ export const useData = (options?: UseQueryOptions) => {
 }
 
 export const useUpdateData = (options: any) => {
-  const { mutate, isLoading } = useMutation(
-    (data: Partial<IDataType>) =>
+  const { mutate } = useMutation(
+    (data: Partial<IDataType | undefined>) =>
       request('https://tablemanage.herokuapp.com/table/{id}', {
         method: 'PUT',
         body: data,
@@ -45,12 +45,12 @@ export const useUpdateData = (options: any) => {
     }
   )
 
-  return [isLoading, mutate] as MutationResult
+  return  mutate
 }
 
 export const useDeleteData = (options: any) => {
-  const { mutate, isLoading } = useMutation(
-    (data: Partial<IDataType>) =>
+  const { mutate } = useMutation(
+    (data: Partial<IDataType | undefined>) =>
       request('https://tablemanage.herokuapp.com/table/{id}', {
         method: 'DELETE',
         body: data,
@@ -60,5 +60,5 @@ export const useDeleteData = (options: any) => {
     }
   )
 
-  return [isLoading, mutate] as MutationResult
+  return  mutate ;
 }

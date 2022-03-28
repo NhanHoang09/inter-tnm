@@ -9,19 +9,28 @@ import {
   Select,
   Table,
   Tag,
+  Modal,
 } from 'antd'
 import React, { useState } from 'react'
-import { useData, useUpdateData, useDeleteData,IDataType } from './queries'
+import { useData, useUpdateData, useDeleteData, IDataType } from './queries'
 import './table.css'
 
 const { Option } = Select
 
+interface IFilter {
+  [key: string]: string | number | boolean
+}
+
 const TableContainer = () => {
   const [changeStatus, setChangeStatus] = useState<string>('')
   const [valueChecked, setValueChecked] = useState<IDataType[]>([])
-  const [stateFilter, setStateFilter] = useState<{ [key: string]: any }>({
+  const [stateFilter, setStateFilter] = useState<{
+    [key: string]: string | number | boolean
+  }>({
     _page: 1,
   })
+  const [showModal, setShowModal] = useState(false)
+  const [itemDelete, setItemDelete] = useState<IDataType>()
 
   const { data, isFetching, refetch } = useData({
     variables: stateFilter,
@@ -38,7 +47,9 @@ const TableContainer = () => {
     return (
       <div style={styleTitleTable}>
         {name}
-        <Select onChange={e => handleChangeInputSelect(e, title)}>
+        <Select
+          allowClear={true}
+          onChange={value => handleFilter({ [title]: value })}>
           <Option value="true">YES</Option>
           <Option value="false">NO</Option>
         </Select>
@@ -62,9 +73,7 @@ const TableContainer = () => {
         {name}
         <Input
           style={{ width: 'auto' }}
-          onChange={debounce(e =>
-            handleChangeInputSearch(e.target.value, value)
-          )}
+          onChange={debounce(e => handleFilter({ [value]: e.target.value.trim() }))}
         />
       </div>
     )
@@ -76,7 +85,7 @@ const TableContainer = () => {
         {name}
         <DatePicker
           onChange={(dataDate: moment.Moment | null, dateString: string) =>
-            handleChangeDateTime(dateString, value)
+            handleFilter({ [value]: dateString })
           }
         />
       </div>
@@ -165,7 +174,10 @@ const TableContainer = () => {
         return (
           <div style={styleTitleTable}>
             Status
-            <Select onChange={handleChangeStatus} placeholder="Select a status">
+            <Select
+              allowClear={true}
+              onChange={value => handleFilter({ status: value })}
+              placeholder="Select a status">
               <Option value="new">new</Option>
               <Option value="approved">approved</Option>
               <Option value="rejected">rejected</Option>
@@ -179,7 +191,12 @@ const TableContainer = () => {
     {
       title: customTitle('Delete'),
       render: (record: IDataType) => (
-        <DeleteOutlined onClick={() => handleRemove(record)} />
+        <DeleteOutlined
+          onClick={() => {
+            setShowModal(true)
+            setItemDelete(record)
+          }}
+        />
       ),
     },
   ]
@@ -195,12 +212,8 @@ const TableContainer = () => {
   const rowSelection = {
     onSelect: onSelectChange,
     onSelectNone: () => {
-      setChangeStatus("");
+      setChangeStatus('')
     },
-  }
-
-  const handleChangeInputSelect = (value: string, name: string) => {
-    setStateFilter({ ...stateFilter, [name]: value })
   }
 
   function debounce<Params extends any[]>(
@@ -216,21 +229,8 @@ const TableContainer = () => {
     }
   }
 
-  const handleChangeInputSearch = (value: string, name: string) => {
-    setStateFilter({ ...stateFilter, [name]: value })
-  }
-
-  const handleChangeDateTime = (value: string, name: string) => {
-    setStateFilter({ ...stateFilter, [name]: value })
-  }
-
-  const handleChangeStatus = (value: string) => {
-    setStateFilter({ ...stateFilter, status: value })
-  }
-
- 
-  const handlePaginationChange = (page: number) => {
-    setStateFilter({ ...stateFilter, _page: page })
+  const handleFilter = (value: IFilter) => {
+    setStateFilter({ ...stateFilter, ...value })
   }
 
   const mutationOpts = {
@@ -239,7 +239,7 @@ const TableContainer = () => {
     },
   }
 
-  const [updating, handleUpdate] = useUpdateData(mutationOpts)
+  const handleUpdate = useUpdateData(mutationOpts)
 
   const handleSubmit = () => {
     valueChecked.map(item => {
@@ -247,12 +247,12 @@ const TableContainer = () => {
     })
   }
 
-  const [deleting, handleDelete] = useDeleteData(mutationOpts)
+  const handleDelete = useDeleteData(mutationOpts)
 
-  const handleRemove = (value : IDataType) => {
-    handleDelete(value)
+  const handleOk = (values: Partial<IDataType | undefined>) => {
+    handleDelete(values)
+    setShowModal(false)
   }
-
 
   return (
     <div className="container">
@@ -260,9 +260,10 @@ const TableContainer = () => {
         <Col span="6">
           <div className="input-container">
             <Select
+              allowClear={true}
               placeholder="Change status"
               className="select-input"
-              onChange={(value: string) => setChangeStatus(value)}>
+              onChange={setChangeStatus}>
               <Option value="new">new</Option>
               <Option value="approved">approved</Option>
               <Option value="rejected">rejected</Option>
@@ -271,7 +272,10 @@ const TableContainer = () => {
           </div>
         </Col>
         <Col span="6">
-          <Button className="btn btn-default" onClick={handleSubmit}>
+          <Button
+            className="btn btn-default"
+            onClick={handleSubmit}
+            disabled={changeStatus ? undefined : true}>
             Apply
           </Button>
         </Col>
@@ -284,7 +288,7 @@ const TableContainer = () => {
         }}
         columns={columns}
         dataSource={data}
-        loading={isFetching}  
+        loading={isFetching}
         size="small"
         rowClassName="row-class"
         pagination={false}
@@ -292,9 +296,16 @@ const TableContainer = () => {
       <Pagination
         className="pagination"
         total={100}
-        onChange={handlePaginationChange}
+        onChange={(page: number) => handleFilter({ _page: page })}
         hideOnSinglePage={true}
       />
+      <Modal
+        title="Confirm Delete"
+        visible={showModal}
+        onOk={() => handleOk(itemDelete)}
+        onCancel={() => setShowModal(false)}>
+        <p>Are you sure?</p>
+      </Modal>
     </div>
   )
 }
