@@ -3,7 +3,7 @@ import { useMutation } from 'react-query'
 import { UseQueryOptions } from '@lib/types'
 import { request } from '@utils/request'
 import useQuery from '@lib/useQuery'
-import type { MutationResult, MutationOptions } from '@lib/types'
+import type { MutationResult } from '@lib/types'
 
 export type User = {
   id: number
@@ -18,7 +18,7 @@ export type User = {
     geo: {
       lat: number
       lng: number
-    } 
+    }
   }
   phone: string
   website: string
@@ -95,3 +95,18 @@ export const useQueryUser = ({
 
 //   return [isLoading, mutate] as MutationResult
 // }
+
+export const useUpdateUser = (options: any) => {
+  const { mutate, isLoading } = useMutation(
+    (data: Partial<User>) =>
+      request('https://jsonplaceholder.typicode.com/users/{id}', {
+        method: 'PUT',
+        body: data,
+      }),
+    {
+      ...options,
+    }
+  )
+
+  return [isLoading, mutate] as MutationResult
+}

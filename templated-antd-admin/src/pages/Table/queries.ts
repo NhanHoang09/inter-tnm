@@ -1,27 +1,26 @@
-import React, {useState} from 'react'
+import { useMutation } from 'react-query'
 import useQuery from '@lib/useQuery'
-import { UseQueryOptions } from '@lib/types'
-
+import type { MutationResult ,UseQueryOptions} from '@lib/types'
+import { request } from '@utils/request'
 
 export interface IDataType {
-  id: number;
-  key: string;
-  quote_id: string;
-  name: string;
-  care_recipient_dob: string;
-  rate: number;
-  short_term: boolean;
-  contagion: boolean;
-  emergency: boolean;
-  mileage_surcharge: boolean;
-  primary_quote: boolean;
-  start_date: string;
-  created_date: string;
-  created_by: string;
-  updated_date: string;
-  status: string;
+  id: number
+  key: string
+  quote_id: string
+  name: string
+  care_recipient_dob: string
+  rate: number
+  short_term: boolean
+  contagion: boolean
+  emergency: boolean
+  mileage_surcharge: boolean
+  primary_quote: boolean
+  start_date: string
+  created_date: string
+  created_by: string
+  updated_date: string
+  status: string
 }
-
 
 export const useData = (options?: UseQueryOptions) => {
   const { data, ...rest } = useQuery<IDataType[]>(
@@ -34,31 +33,32 @@ export const useData = (options?: UseQueryOptions) => {
   }
 }
 
-export const useQueryData = ({
-  variables,
-  ...options
-}: UseQueryOptions = {}) => {
-  const [query, setQuery] = useState<{ [key: string]: any }>()
-  const { data, ...rest } = useQuery<IDataType>(
-    `https://tablemanage.herokuapp.com/table/{id}`,
+export const useUpdateData = (options: any) => {
+  const { mutate, isLoading } = useMutation(
+    (data: Partial<IDataType>) =>
+      request('https://tablemanage.herokuapp.com/table/{id}', {
+        method: 'PUT',
+        body: data,
+      }),
     {
       ...options,
-      variables: { ...variables, ...query },
-      enabled: !!variables?.id || !!query?.id,
     }
   )
 
-  const refetch = (values: { [key: string]: any }) => {
-    setQuery(values)
-  }
-
-  return {
-    ...rest,
-    data,
-    refetch,
-  }
+  return [isLoading, mutate] as MutationResult
 }
 
-const updateData = (data: { [key: string]: any }) => {
-  console.log(data)
+export const useDeleteData = (options: any) => {
+  const { mutate, isLoading } = useMutation(
+    (data: Partial<IDataType>) =>
+      request('https://tablemanage.herokuapp.com/table/{id}', {
+        method: 'DELETE',
+        body: data,
+      }),
+    {
+      ...options,
+    }
+  )
+
+  return [isLoading, mutate] as MutationResult
 }

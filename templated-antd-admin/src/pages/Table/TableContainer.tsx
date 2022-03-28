@@ -10,10 +10,8 @@ import {
   Table,
   Tag,
 } from 'antd'
-import React, {  useState } from 'react'
-import axios from 'axios'
-import { IDataType, IStateFilter } from '@lib/types'
-import {useData} from "./queries";
+import React, { useState } from 'react'
+import { useData, useUpdateData, useDeleteData,IDataType } from './queries'
 import './table.css'
 
 const { Option } = Select
@@ -21,17 +19,13 @@ const { Option } = Select
 const TableContainer = () => {
   const [changeStatus, setChangeStatus] = useState<string>('')
   const [valueChecked, setValueChecked] = useState<IDataType[]>([])
-  const [reLoader, setReLoader] = useState<boolean>(false)
-  const [totalPage, setTotalPage] = useState<number>()
-
   const [stateFilter, setStateFilter] = useState<{ [key: string]: any }>({
     _page: 1,
   })
 
-  const { data, isFetching } = useData({
+  const { data, isFetching, refetch } = useData({
     variables: stateFilter,
   })
-
 
   const styleTitleTable: any = {
     display: 'flex',
@@ -185,7 +179,7 @@ const TableContainer = () => {
     {
       title: customTitle('Delete'),
       render: (record: IDataType) => (
-        <DeleteOutlined onClick={() => handleRemove(record.key)} />
+        <DeleteOutlined onClick={() => handleRemove(record)} />
       ),
     },
   ]
@@ -201,7 +195,7 @@ const TableContainer = () => {
   const rowSelection = {
     onSelect: onSelectChange,
     onSelectNone: () => {
-      // setStatus("");
+      setChangeStatus("");
     },
   }
 
@@ -234,23 +228,31 @@ const TableContainer = () => {
     setStateFilter({ ...stateFilter, status: value })
   }
 
-  const handleRemove = (key: string) => {
-    // setFilterData(filterData.filter((item: IDataType) => item.key !== key))
-  }
-
+ 
   const handlePaginationChange = (page: number) => {
     setStateFilter({ ...stateFilter, _page: page })
   }
 
+  const mutationOpts = {
+    onSuccess: () => {
+      refetch()
+    },
+  }
+
+  const [updating, handleUpdate] = useUpdateData(mutationOpts)
+
   const handleSubmit = () => {
-    valueChecked.map(async item => {
-      await axios.put(`https://tablemanage.herokuapp.com/table/${item.id}`, {
-        ...item,
-        status: changeStatus,
-      })
-      setReLoader(!reLoader)
+    valueChecked.map(item => {
+      return handleUpdate({ ...item, status: changeStatus })
     })
   }
+
+  const [deleting, handleDelete] = useDeleteData(mutationOpts)
+
+  const handleRemove = (value : IDataType) => {
+    handleDelete(value)
+  }
+
 
   return (
     <div className="container">
@@ -282,7 +284,7 @@ const TableContainer = () => {
         }}
         columns={columns}
         dataSource={data}
-        loading={isFetching}
+        loading={isFetching}  
         size="small"
         rowClassName="row-class"
         pagination={false}

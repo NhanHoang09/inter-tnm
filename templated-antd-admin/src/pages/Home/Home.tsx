@@ -9,7 +9,7 @@ import {
   useUsers,
   useQueryUser,
   // useCreateUser,
-  // useUpdateUser,
+  useUpdateUser,
   User,
 } from './queries'
 import UserModal from './UserModal'
@@ -43,11 +43,12 @@ export default function Home() {
   }
 
   // const [creating, handleAdd] = useCreateUser(mutationOpts)
-  // const [updating, handleUpdate] = useUpdateUser(mutationOpts)
+  const [updating, handleUpdate] = useUpdateUser(mutationOpts)
 
   const handleOk = (values: Partial<User>) => {
     // const handler = values.id ? handleUpdate : handleAdd
     // handler(values)
+    handleUpdate(values)
   }
 
   const handleSearch = (value: string) => {
@@ -129,6 +130,7 @@ export default function Home() {
           loadingData={user.isFetching}
           onCancel={editModal.close}
           // confirmLoading={creating || updating}
+          confirmLoading={updating}
           onOk={handleOk}
         />
       )}
