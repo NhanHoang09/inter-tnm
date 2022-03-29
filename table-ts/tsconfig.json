@@ -1,5 +1,16 @@
 {
   "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "@components/*": [
+        "components/*",
+        "components/ui/*",
+        "components/common/*"
+      ],
+      "@icons/*": ["components/icons/*"],
+      "@pages/*": ["pages/*"],
+      "@lib/*": ["lib/*"]
+    },
     "target": "es5",
     "lib": [
       "dom",
@@ -22,5 +33,5 @@
   },
   "include": [
     "src"
-  ]
+, "typings/types.d.ts"  ]
 }

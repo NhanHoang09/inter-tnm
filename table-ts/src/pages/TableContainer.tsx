@@ -10,10 +10,8 @@ import {
   Table,
   Tag,
   Modal,
-  Layout,
 } from 'antd'
-import React, { useState } from 'react'
-import {  useHistory } from 'react-router-dom'
+import  { useState } from 'react'
 import { useData, useUpdateData, useDeleteData, IDataType } from './queries'
 import './table.css'
 
@@ -32,18 +30,17 @@ const TableContainer = () => {
     _page: 1,
   })
   const [showModal, setShowModal] = useState(false)
+  const [itemDelete, setItemDelete] = useState<IDataType>()
 
   const { data, isFetching, refetch } = useData({
     variables: stateFilter,
   })
 
-  let history = useHistory()
-
   const styleTitleTable: any = {
     display: 'flex',
     flexDirection: 'column',
     textAlign: 'center',
-    width: '130px',
+    width: '150px',
   }
 
   const titleInputSelect = (name: string, title: string) => {
@@ -76,9 +73,7 @@ const TableContainer = () => {
         {name}
         <Input
           style={{ width: 'auto' }}
-          onChange={debounce(e =>
-            handleFilter({ [value]: e.target.value.trim() })
-          )}
+          onChange={debounce(e => handleFilter({ [value]: e.target.value.trim() }))}
         />
       </div>
     )
@@ -199,7 +194,7 @@ const TableContainer = () => {
         <DeleteOutlined
           onClick={() => {
             setShowModal(true)
-            setValueChecked([record])
+            setItemDelete(record)
           }}
         />
       ),
@@ -218,10 +213,6 @@ const TableContainer = () => {
     onSelect: onSelectChange,
     onSelectNone: () => {
       setChangeStatus('')
-      console.log('onSelectNone')
-    },
-    onSelectAll: (selected: boolean, selectedRows: IDataType[]) => {
-      setValueChecked(selectedRows)
     },
   }
 
@@ -238,29 +229,8 @@ const TableContainer = () => {
     }
   }
 
-  const handleConvertObjectToString = (params: {
-    [key: string]: string | number | boolean
-  }) => {
-    let queryString = Object.keys(params)
-      .map(key => {
-        if (params[key] !== undefined) {
-          return key + '=' + params[key]
-        }
-      })
-      .join('&')
-    return queryString
-  }
-
-
   const handleFilter = (value: IFilter) => {
     setStateFilter({ ...stateFilter, ...value })
-    history.push(
-      `/quotes?${handleConvertObjectToString({ ...stateFilter, ...value })}`
-    )
-
-  const qs = new URLSearchParams();
-
-  console.log(qs.toString())
   }
 
   const mutationOpts = {
@@ -275,75 +245,68 @@ const TableContainer = () => {
     valueChecked.map(item => {
       return handleUpdate({ ...item, status: changeStatus })
     })
-    setValueChecked([])
-    setChangeStatus('')
   }
 
   const handleDelete = useDeleteData(mutationOpts)
 
-  const handleOk = (values: Partial<IDataType[]>) => {
-    values.map(value => handleDelete(value))
+  const handleOk = (values: Partial<IDataType | undefined>) => {
+    handleDelete(values)
     setShowModal(false)
-    setValueChecked([])
   }
 
   return (
-    <>
-      <Layout>
-        <Row className="m-12">
-          <Col span={24} className="flex items-center justify-start">
+    <div className="container">
+      <Row gutter={16}>
+        <Col span="6">
+          <div className="input-container">
             <Select
               allowClear={true}
               placeholder="Change status"
-              className="w-280"
-              value={changeStatus}
+              className="select-input"
               onChange={setChangeStatus}>
               <Option value="new">new</Option>
               <Option value="approved">approved</Option>
               <Option value="rejected">rejected</Option>
               <Option value="closed">closed</Option>
             </Select>
-            <Button
-              className="btn btn-default ml-12"
-              onClick={handleSubmit}
-              disabled={!changeStatus}>
-              Apply
-            </Button>
-          </Col>
-        </Row>
-        <Row>
-          <Col span={24}>
-            <Table
-              className="table-container"
-              scroll={{ x: 0 }}
-              rowSelection={{
-                type: 'checkbox',
-                ...rowSelection,
-              }}
-              columns={columns}
-              dataSource={data}
-              loading={isFetching}
-              size="small"
-              rowClassName="row-class"
-              pagination={false}
-            />
-            <Pagination
-              className="pagination"
-              total={100}
-              onChange={(page: number) => handleFilter({ _page: page })}
-              hideOnSinglePage={true}
-            />
-          </Col>
-        </Row>
-      </Layout>
+          </div>
+        </Col>
+        <Col span="6">
+          <Button
+            className="btn btn-default"
+            onClick={handleSubmit}
+            disabled={changeStatus ? undefined : true}>
+            Apply
+          </Button>
+        </Col>
+      </Row>
+      <Table
+        className="table-container"
+        rowSelection={{
+          type: 'checkbox',
+          ...rowSelection,
+        }}
+        columns={columns}
+        dataSource={data}
+        loading={isFetching}
+        size="small"
+        rowClassName="row-class"
+        pagination={false}
+      />
+      <Pagination
+        className="pagination"
+        total={100}
+        onChange={(page: number) => handleFilter({ _page: page })}
+        hideOnSinglePage={true}
+      />
       <Modal
         title="Confirm Delete"
         visible={showModal}
-        onOk={() => handleOk(valueChecked)}
+        onOk={() => handleOk(itemDelete)}
         onCancel={() => setShowModal(false)}>
         <p>Are you sure?</p>
       </Modal>
-    </>
+    </div>
   )
 }
 

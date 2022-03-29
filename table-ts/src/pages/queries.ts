@@ -1,7 +1,6 @@
 import { useMutation } from 'react-query'
 import useQuery from '@lib/useQuery'
 import type { UseQueryOptions} from '@lib/types'
-import { request } from '@utils/request'
 
 export interface IDataType {
   id: number
@@ -35,7 +34,7 @@ export const useData = (options?: UseQueryOptions) => {
 
 export const useUpdateData = (options: any) => {
   const { mutate } = useMutation(
-    (data: Partial<IDataType>) =>
+    (data: Partial<IDataType | undefined>) =>
       request('https://tablemanage.herokuapp.com/table/{id}', {
         method: 'PUT',
         body: data,
@@ -44,12 +43,13 @@ export const useUpdateData = (options: any) => {
       ...options,
     }
   )
+
   return  mutate
 }
 
 export const useDeleteData = (options: any) => {
   const { mutate } = useMutation(
-    (data: Partial<IDataType| undefined>) =>
+    (data: Partial<IDataType | undefined>) =>
       request('https://tablemanage.herokuapp.com/table/{id}', {
         method: 'DELETE',
         body: data,
@@ -58,5 +58,6 @@ export const useDeleteData = (options: any) => {
       ...options,
     }
   )
+
   return  mutate ;
 }

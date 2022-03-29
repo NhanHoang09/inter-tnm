@@ -4,16 +4,16 @@ interface IDataType {
   key: string;
   quote_id: string;
   name: string;
-  care_recipient_dob: dateTime;
+  care_recipient_dob: string;
   rate: number;
   short_term: boolean;
   contagion: boolean;
   emergency: boolean;
   mileage_surcharge: boolean;
   primary_quote: boolean;
-  start_date: dateTime;
-  created_date: dateTime;
+  start_date: string;
+  created_date: string;
   created_by: string;
-  updated_date: dateTime;
+  updated_date: string;
   status: string;
 }

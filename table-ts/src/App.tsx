@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import TableContainer from './components/TableContainer';
+import TableContainer from './pages/TableContainer';
 
 function App() {
   return (
