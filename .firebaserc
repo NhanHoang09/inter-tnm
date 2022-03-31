@@ -46,6 +46,9 @@
         ],
         "templateadmin": [
           "template-antd-admin-intern-tnm"
+        ],
+        "verify-account": [
+          "verify-account-intern-tnm"
         ]
       }
     }

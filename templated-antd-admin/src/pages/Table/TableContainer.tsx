@@ -12,8 +12,8 @@ import {
   Modal,
   Layout,
 } from 'antd'
-import React, { useState } from 'react'
-import {  useHistory } from 'react-router-dom'
+import React, { useState,useEffect } from 'react'
+import { useHistory } from 'react-router-dom'
 import { useData, useUpdateData, useDeleteData, IDataType } from './queries'
 import './table.css'
 
@@ -32,12 +32,36 @@ const TableContainer = () => {
     _page: 1,
   })
   const [showModal, setShowModal] = useState(false)
+  const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([])
 
   const { data, isFetching, refetch } = useData({
     variables: stateFilter,
   })
 
   let history = useHistory()
+
+  const convertQueryStringToObject = (queryString: string) => {
+    const query = queryString.split('&')
+    const result: any = {}
+    query.forEach((item) => {
+      const [key, value] = item.split('=')
+      result[key] = value
+    })
+    return result
+  }
+
+  const handleDefaultValue = (value: string) => {
+    const params = history.location.search
+    return convertQueryStringToObject(params)[value]
+  }
+  const handleSetUrl = () => {
+    const params = history.location.search.substring(1)
+    setStateFilter({...stateFilter,...convertQueryStringToObject(params)})
+  }
+
+  useEffect(() => {
+    handleSetUrl()
+  },[]);
 
   const styleTitleTable: any = {
     display: 'flex',
@@ -52,7 +76,9 @@ const TableContainer = () => {
         {name}
         <Select
           allowClear={true}
-          onChange={value => handleFilter({ [title]: value })}>
+          onChange={value => {handleFilter({ [title]: value })}}
+          defaultValue={handleDefaultValue(title)}
+          >
           <Option value="true">YES</Option>
           <Option value="false">NO</Option>
         </Select>
@@ -70,14 +96,15 @@ const TableContainer = () => {
     return value ? <Tag color="blue">YES</Tag> : <Tag color="red">NO</Tag>
   }
 
-  const titleInputSearch = (name: string, value: string) => {
+  const titleInputSearch = (name: string, values: string) => {
     return (
       <div style={{ ...styleTitleTable, width: 'auto' }}>
         {name}
         <Input
+          value={handleDefaultValue(values)}
           style={{ width: 'auto' }}
           onChange={debounce(e =>
-            handleFilter({ [value]: e.target.value.trim() })
+            handleFilter({ [values]: e.target.value.trim() })
           )}
         />
       </div>
@@ -89,6 +116,7 @@ const TableContainer = () => {
       <div style={styleTitleTable}>
         {name}
         <DatePicker
+        defaultValue={handleDefaultValue(value)}
           onChange={(dataDate: moment.Moment | null, dateString: string) =>
             handleFilter({ [value]: dateString })
           }
@@ -206,23 +234,18 @@ const TableContainer = () => {
     },
   ]
 
-  const onSelectChange = (
-    record: IDataType,
-    selected: boolean,
-    selectedRows: IDataType[]
-  ) => {
-    setValueChecked(selectedRows)
-  }
+  
 
   const rowSelection = {
-    onSelect: onSelectChange,
-    onSelectNone: () => {
-      setChangeStatus('')
-      console.log('onSelectNone')
-    },
+    // onSelect: onSelectChange,
     onSelectAll: (selected: boolean, selectedRows: IDataType[]) => {
       setValueChecked(selectedRows)
     },
+    onChange: (selectedRowKeys : any, selectedRows: IDataType[]) => {
+      setValueChecked(selectedRows)
+      setSelectedRowKeys(selectedRowKeys)
+    },
+    preserveSelectedRowKeys: true
   }
 
   function debounce<Params extends any[]>(
@@ -243,7 +266,7 @@ const TableContainer = () => {
   }) => {
     let queryString = Object.keys(params)
       .map(key => {
-        if (params[key] !== undefined) {
+        if (params[key] !== undefined && params[key] !== '') {
           return key + '=' + params[key]
         }
       })
@@ -251,16 +274,16 @@ const TableContainer = () => {
     return queryString
   }
 
+  const handleQueryString = (params : any) => {
+    const queryString = new URLSearchParams(
+      handleConvertObjectToString(params)
+    ).toString()
+    return queryString
+  }
 
   const handleFilter = (value: IFilter) => {
+    history.push({ pathname: '/quotes', search: handleQueryString({...stateFilter, ...value}) })
     setStateFilter({ ...stateFilter, ...value })
-    history.push(
-      `/quotes?${handleConvertObjectToString({ ...stateFilter, ...value })}`
-    )
-
-  const qs = new URLSearchParams();
-
-  console.log(qs.toString())
   }
 
   const mutationOpts = {
@@ -330,7 +353,9 @@ const TableContainer = () => {
             <Pagination
               className="pagination"
               total={100}
-              onChange={(page: number) => handleFilter({ _page: page })}
+              onChange={(page: number) => {
+                handleFilter({_page: page })
+              }}
               hideOnSinglePage={true}
             />
           </Col>
